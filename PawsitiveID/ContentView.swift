@@ -20,7 +20,7 @@ struct ContentView: View {
                 Text("Found a pet")
             }
             Tab("Account", systemImage: "person.fill") {
-                Text("Found a pet")
+                Text("Account")
             }
         }
     }
