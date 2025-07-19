@@ -6,13 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		63186D8A2E2B711C00409C94 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 63186D892E2B711C00409C94 /* GoogleMaps */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		63ECEE632E28B490006C258F /* PawsitiveID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PawsitiveID.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		63186D902E2B731600409C94 /* Exceptions for "PawsitiveID" folder in "PawsitiveID" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 63ECEE622E28B490006C258F /* PawsitiveID */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		63ECEE652E28B490006C258F /* PawsitiveID */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				63186D902E2B731600409C94 /* Exceptions for "PawsitiveID" folder in "PawsitiveID" target */,
+			);
 			path = PawsitiveID;
 			sourceTree = "<group>";
 		};
@@ -23,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63186D8A2E2B711C00409C94 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +83,7 @@
 			);
 			name = PawsitiveID;
 			packageProductDependencies = (
+				63186D892E2B711C00409C94 /* GoogleMaps */,
 			);
 			productName = PawsitiveID;
 			productReference = 63ECEE632E28B490006C258F /* PawsitiveID.app */;
@@ -94,6 +113,9 @@
 			);
 			mainGroup = 63ECEE5A2E28B490006C258F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				63186D882E2B711C00409C94 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 63ECEE642E28B490006C258F /* Products */;
 			projectDirPath = "";
@@ -253,8 +275,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PawsitiveID/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PawsitiveID;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Track current location to help locate pets.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show where you are currently located to show pet locations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -282,8 +307,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PawsitiveID/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = PawsitiveID;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Track current location to help locate pets.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Show where you are currently located to show pet locations.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -324,6 +352,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		63186D882E2B711C00409C94 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		63186D892E2B711C00409C94 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 63186D882E2B711C00409C94 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 63ECEE5B2E28B490006C258F /* Project object */;
 }
