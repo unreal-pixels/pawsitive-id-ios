@@ -23,21 +23,53 @@ struct FoundPetView: View {
     var body: some View {
         VStack {
             GoogleMaps(pets: $foundPets)
-                .containerRelativeFrame(.vertical, count: 100, span: 50, spacing: 0)
-            NavigationView {
-                List(foundPets) { pet in
-                    HStack {
+                .containerRelativeFrame(
+                    .vertical,
+                    count: 100,
+                    span: 50,
+                    spacing: 0
+                )
+            List(foundPets) { pet in
+                HStack {
+                    AsyncImage(
+                        url: URL(
+                            string:
+                                "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg"
+                        )
+                    ) { result in
+                        result.image?
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100, alignment: .center)
+                            .clipped()
+                    }
+                    .frame(width: 100, height: 100, alignment: .center)
+                    VStack(alignment: .leading, spacing: 0) {
                         Text(pet.name)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(1)
+                            .padding([.bottom], 5)
+                        Text(pet.description)
+                            .font(.caption)
+                            .italic()
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                        Spacer()
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(10)
                 }
-                .task {
-                    do {
-                        foundPets = try await performAPICall()
-                    } catch {
-                        foundPets = []
-                    }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .task {
+                do {
+                    foundPets = try await performAPICall()
+                } catch {
+                    foundPets = []
                 }
             }
+
         }
     }
 }

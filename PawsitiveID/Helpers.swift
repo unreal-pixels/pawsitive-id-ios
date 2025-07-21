@@ -12,3 +12,7 @@ func isValidEmail(_ email: String) -> Bool {
     let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
     return emailPred.evaluate(with: email)
 }
+
+func logIssue(message: String, data: Any?) -> Void {
+    print("==PawsitiveID Log==", message, data ?? "NO_DATA", separator: " -- ")
+}

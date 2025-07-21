@@ -8,10 +8,11 @@
 import GoogleMaps
 import SwiftUI
 
+var setLocationOnce = false
+
 struct GoogleMaps: UIViewRepresentable {
     @Binding var pets: [FoundPetData]
     @StateObject var locationService = LocationService()
-    @State var setLocationOnce = false
 
     func getCamera() -> GMSCameraPosition {
         return GMSCameraPosition.camera(
@@ -19,15 +20,34 @@ struct GoogleMaps: UIViewRepresentable {
                 ?? 34.0549,
             longitude: locationService.lastLocation?.coordinate.longitude
                 ?? 118.2426,
-            zoom: 14.0
+            zoom: 12.0
         )
     }
 
     func makeUIView(context: Self.Context) -> GMSMapView {
-        let mapView = GMSMapView.map(
-            withFrame: CGRect.zero,
-            camera: getCamera()
-        )
+        let options = GMSMapViewOptions()
+        options.camera = getCamera()
+        options.frame = CGRect.zero
+        let mapView = GMSMapView.init(options: options)
+
+        do {
+            if let styleURL = Bundle.main.url(
+                forResource: "MapStyles",
+                withExtension: "json"
+            ) {
+                mapView.mapStyle = try GMSMapStyle(contentsOfFileURL: styleURL)
+            } else {
+                logIssue(
+                    message: "GoogleMaps: unable to get map styles",
+                    data: nil
+                )
+            }
+        } catch {
+            logIssue(
+                message: "GoogleMaps: unable to load map styles",
+                data: error
+            )
+        }
 
         return mapView
     }
@@ -41,7 +61,7 @@ struct GoogleMaps: UIViewRepresentable {
 
         for pet in pets {
             let marker: GMSMarker = GMSMarker()
-            
+
             marker.position = CLLocationCoordinate2D(
                 latitude: Double(pet.last_seen_lat) ?? 0,
                 longitude: Double(pet.last_seen_long) ?? 0
@@ -49,18 +69,26 @@ struct GoogleMaps: UIViewRepresentable {
 
             switch pet.animal_type {
             case "DOG":
-                marker.iconView = UIImageView(image: UIImage(systemName: "dog.circle"))
+                marker.iconView = UIImageView(
+                    image: UIImage(systemName: "dog.circle")
+                )
             case "CAT":
-                marker.iconView = UIImageView(image: UIImage(systemName: "cat.circle"))
+                marker.iconView = UIImageView(
+                    image: UIImage(systemName: "cat.circle")
+                )
             case "RABBIT":
-                marker.iconView = UIImageView(image: UIImage(systemName: "hare.circle"))
+                marker.iconView = UIImageView(
+                    image: UIImage(systemName: "hare.circle")
+                )
             default:
-                marker.iconView = UIImageView(image: UIImage(systemName: "grid.circle"))
+                marker.iconView = UIImageView(
+                    image: UIImage(systemName: "grid.circle")
+                )
             }
-            
-            marker.iconView?.tintColor = .red
-            // TODO: Resize to better size. And fix issue with rendering multiple markers
-            
+
+            marker.iconView?.tintColor = .blue
+            marker.iconView?.frame = CGRectMake(0, 0, 40, 40)
+
             marker.title = pet.name
             marker.snippet = pet.description
             marker.map = mapView
