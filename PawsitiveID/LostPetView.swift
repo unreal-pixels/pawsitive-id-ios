@@ -11,8 +11,10 @@ enum AnimalType {
     case Dog
     case Cat
     case Rabbit
+    case Bird
     case Other
 }
+
 struct LostPetView: View {
     @State private var petName: String = ""
     @State private var petType: AnimalType = .Cat
@@ -43,6 +45,7 @@ struct LostPetView: View {
                         Text("Cat").tag(AnimalType.Cat)
                         Text("Dog").tag(AnimalType.Dog)
                         Text("Rabbit").tag(AnimalType.Rabbit)
+                        Text("Bird").tag(AnimalType.Bird)
                         Text("Other").tag(AnimalType.Other)
                     }
                     ZStack(alignment: .leading) {

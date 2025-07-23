@@ -1,18 +1,18 @@
 //
-//  FoundPetData.swift.swift
+//  LostPetData.swift
 //  PawsitiveID
 //
-//  Created by David Bradshaw on 7/19/25.
+//  Created by David Bradshaw on 7/23/25.
 //
 
 import Foundation
 
-struct FoundPetDataApi: Codable {
+struct LostPetDataApi: Codable {
     let status: String
-    let data: [FoundPetData]
+    let data: [LostPetData]
 }
 
-struct FoundPetData: Codable, Identifiable {
+struct LostPetData: Codable, Identifiable {
     let id: String
     let name: String
     /** Animal Type  is "CAT" or  "DOG" or "'RABBIT" or "BIRD" or "OTHER" */
@@ -21,10 +21,10 @@ struct FoundPetData: Codable, Identifiable {
     let last_seen_date: String
     let last_seen_long: String
     let last_seen_lat: String
-    let found_by_name: String
-    let found_by_phone: String
-    let found_by_email: String
+    let owner_name: String
+    let owner_phone: String
+    let owner_email: String
     let created_at: String
-    let photo: String?
+    let photo: String
     let chats: [ChatItem]
 }

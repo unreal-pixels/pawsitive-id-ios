@@ -33,8 +33,7 @@ struct FoundPetView: View {
                 HStack {
                     AsyncImage(
                         url: URL(
-                            string:
-                                "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg"
+                            string: pet.photo ?? "https://unrealpixels.app/api/pawsitive-id/images/generic.jpg"
                         )
                     ) { result in
                         result.image?
