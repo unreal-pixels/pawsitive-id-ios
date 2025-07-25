@@ -12,6 +12,11 @@ struct LostPetDataApi: Codable {
     let data: [LostPetData]
 }
 
+struct LostPetDataApiSingle: Codable {
+    let status: String
+    let data: LostPetData
+}
+
 struct LostPetData: Codable, Identifiable {
     let id: String
     let name: String
