@@ -8,14 +8,6 @@
 import PhotosUI
 import SwiftUI
 
-enum AnimalType {
-    case Dog
-    case Cat
-    case Rabbit
-    case Bird
-    case Other
-}
-
 struct LostPetView: View {
     @State private var petName: String = ""
     @State private var petType: AnimalType = .Cat
@@ -30,7 +22,9 @@ struct LostPetView: View {
     @State private var photoData: [Data] = []
 
     func isDisabled() -> Bool {
-        if !email.isEmpty && !isValidEmail(email) {
+        if !email.isEmpty && !isValidEmail(email)
+            || !isValidPhoneNumber(phoneNumber)
+        {
             return true
         }
 
@@ -44,7 +38,7 @@ struct LostPetView: View {
         let date = dateFormatter.string(from: lastSeen)
 
         var data: [String: Any] = [
-            "name": petName, "animal_type": "CAT",
+            "name": petName, "animal_type": getPetApiName(type: petType),
             "description": petDescription, "last_seen_date": date,
             "last_seen_long": 1, "last_seen_lat": 1,
             "owner_name": ownerName, "owner_phone": phoneNumber,
@@ -149,7 +143,7 @@ struct LostPetView: View {
                         selection: $selectedPhoto,
                         maxSelectionCount: 1,
                         matching: .images
-                    ).onChange(of: selectedPhoto) { selectedPhoto in
+                    ).onChange(of: selectedPhoto) { _, selectedPhoto in
                         photoData.removeAll()
                         selectedPhoto.forEach { photo in
                             Task {

@@ -13,8 +13,29 @@ func isValidEmail(_ email: String) -> Bool {
     return emailPred.evaluate(with: email)
 }
 
+func isValidPhoneNumber(_ phone: String) -> Bool {
+    let phoneRegex = #"^\+?[0-9|*|\-|,]+[0-9]$"#
+    let phonePred = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
+    return phonePred.evaluate(with: phone)
+}
+
 func logIssue(message: String, data: Any?) -> Void {
     print("==PawsitiveID Log==", message, data ?? "NO_DATA", separator: " -- ")
+}
+
+func getPetApiName(type: AnimalType) -> String {
+    switch type {
+    case .Dog:
+        return "DOG"
+    case .Cat:
+        return "CAT"
+    case .Rabbit:
+        return "RABBIT"
+    case .Bird:
+        return "BIRD"
+    default:
+        return "OTHER"
+    }
 }
 
 

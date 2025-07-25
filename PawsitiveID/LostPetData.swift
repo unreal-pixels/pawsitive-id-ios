@@ -7,6 +7,14 @@
 
 import Foundation
 
+enum AnimalType {
+    case Dog
+    case Cat
+    case Rabbit
+    case Bird
+    case Other
+}
+
 struct LostPetDataApi: Codable {
     let status: String
     let data: [LostPetData]
