@@ -16,3 +16,19 @@ func isValidEmail(_ email: String) -> Bool {
 func logIssue(message: String, data: Any?) -> Void {
     print("==PawsitiveID Log==", message, data ?? "NO_DATA", separator: " -- ")
 }
+
+
+func getPetType(type: String) -> String {
+    switch type {
+    case "DOG":
+        return "Dog"
+    case "CAT":
+        return "Cat"
+    case "RABBIT":
+        return "Rabbit"
+    case "BIRD":
+        return "Bird"
+    default:
+        return "Other"
+    }
+}

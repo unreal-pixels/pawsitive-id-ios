@@ -80,6 +80,10 @@ struct GoogleMaps: UIViewRepresentable {
                 marker.iconView = UIImageView(
                     image: UIImage(systemName: "hare.circle")
                 )
+            case "BIRD":
+                marker.iconView = UIImageView(
+                    image: UIImage(systemName: "bird.circle")
+                )
             default:
                 marker.iconView = UIImageView(
                     image: UIImage(systemName: "grid.circle")
