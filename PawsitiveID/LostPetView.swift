@@ -26,7 +26,6 @@ struct LostPetView: View {
     @State private var ownerName: String = ""
     @State private var phoneNumber: String = ""
     @State private var email: String = ""
-    @State private var photo: [String] = []
     @State private var selectedPhoto: [PhotosPickerItem] = []
     @State private var photoData: [Data] = []
 
