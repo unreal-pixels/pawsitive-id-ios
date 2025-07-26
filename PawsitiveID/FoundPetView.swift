@@ -11,6 +11,7 @@ struct FoundPetView: View {
     @State var foundPets: [FoundPetData] = []
     @State private var showingPet = false
     @State private var openedPet: FoundPetData = foundPetInitiator
+    @State private var showCreate = false
 
     func performAPICall() async throws -> [FoundPetData] {
         let url = URL(
@@ -39,12 +40,8 @@ struct FoundPetView: View {
             List(foundPets) { pet in
                 Button(action: { viewPet(pet: pet) }) {
                     HStack {
-                        AsyncImage(
-                            url: URL(
-                                string: pet.photo
-                                    ?? "https://unrealpixels.app/api/pawsitive-id/images/generic.jpg"
-                            )
-                        ) { result in
+                        AsyncImage(url: URL(string: pet.photo ?? genericImage))
+                        { result in
                             result.image?
                                 .resizable()
                                 .scaledToFill()
@@ -90,6 +87,31 @@ struct FoundPetView: View {
                     },
                     pet: $openedPet
                 )
+            }
+        }.toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Report found pet") {
+                    showCreate = true
+                }
+            }
+        }
+        .sheet(isPresented: $showCreate) {
+            NavigationStack {
+                FoundPetFormView(onClose: {pet in
+                    foundPets.insert(pet, at: 0)
+                    showCreate = false
+                })
+                .navigationBarTitle(
+                    "Report found pet",
+                    displayMode: .inline
+                )
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Close") {
+                            showCreate = false
+                        }
+                    }
+                }
             }
         }
     }

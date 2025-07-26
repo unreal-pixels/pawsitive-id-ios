@@ -19,7 +19,7 @@ struct GoogleMaps: UIViewRepresentable {
             withLatitude: locationService.lastLocation?.coordinate.latitude
                 ?? 34.0549,
             longitude: locationService.lastLocation?.coordinate.longitude
-                ?? 118.2426,
+                ?? -118.2426,
             zoom: 12.0
         )
     }

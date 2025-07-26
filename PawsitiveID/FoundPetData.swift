@@ -19,19 +19,19 @@ struct FoundPetDataApiSingle: Codable {
 
 struct FoundPetData: Codable, Identifiable {
     let id: String
-    let name: String
+    var name: String
     /** Animal Type  is "CAT" or  "DOG" or "'RABBIT" or "BIRD" or "OTHER" */
-    let animal_type: String
-    let description: String
-    let last_seen_date: String
-    let last_seen_long: String
-    let last_seen_lat: String
-    let found_by_name: String
-    let found_by_phone: String?
-    let found_by_email: String?
+    var animal_type: String
+    var description: String
+    var last_seen_date: String
+    var last_seen_long: String
+    var last_seen_lat: String
+    var found_by_name: String
+    var found_by_phone: String?
+    var found_by_email: String?
     let created_at: String
-    let photo: String?
-    let chats: [ChatItem]
+    var photo: String?
+    var chats: [ChatItem]
 }
 
 let foundPetInitiator = FoundPetData(
