@@ -7,6 +7,9 @@
 
 import Foundation
 
+let genericImage =
+    "https://unrealpixels.app/api/pawsitive-id/images/generic.jpg"
+
 func isValidEmail(_ email: String) -> Bool {
     let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
     let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -19,7 +22,7 @@ func isValidPhoneNumber(_ phone: String) -> Bool {
     return phonePred.evaluate(with: phone)
 }
 
-func logIssue(message: String, data: Any?) -> Void {
+func logIssue(message: String, data: Any?) {
     print("==PawsitiveID Log==", message, data ?? "NO_DATA", separator: " -- ")
 }
 
@@ -38,7 +41,6 @@ func getPetApiName(type: AnimalType) -> String {
     }
 }
 
-
 func getPetType(type: String) -> String {
     switch type {
     case "DOG":
@@ -51,5 +53,16 @@ func getPetType(type: String) -> String {
         return "Bird"
     default:
         return "Other"
+    }
+}
+
+func getFormattedDate(_ dateString: String) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "y-MM-d"
+
+    if let date = dateFormatter.date(from: dateString) {
+        return date.formatted(date: .long, time: .omitted)
+    } else {
+        return dateString
     }
 }

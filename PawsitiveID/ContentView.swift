@@ -22,10 +22,10 @@ struct ContentView: View {
                         .navigationTitle("Lost a pet")
                 }
             }
-            Tab("Found a pet", systemImage: "pawprint.fill") {
+            Tab("Found pets", systemImage: "pawprint.fill") {
                 NavigationView {
                     FoundPetView()
-                        .navigationTitle("Found a pet")
+                        .navigationTitle("Found pets")
                 }
             }
             Tab("Account", systemImage: "person.fill") {
