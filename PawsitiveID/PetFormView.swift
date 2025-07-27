@@ -1,5 +1,5 @@
 //
-//  LostPetFormView.swift
+//  PetFormView.swift
 //  PawsitiveID
 //
 //  Created by David Bradshaw on 7/17/25.
@@ -8,8 +8,9 @@
 import PhotosUI
 import SwiftUI
 
-struct LostPetFormView: View {
-    let onClose: () -> Void
+struct PetFormView: View {
+    let onClose: (_ pet: PetData) -> Void
+    @Binding var type: String
     @State private var isLoading = false
     @State private var petName: String = ""
     @State private var petType: AnimalType = .Cat
@@ -17,7 +18,7 @@ struct LostPetFormView: View {
     @State private var lastSeen: Date = Date()
     @State private var lastSeenLong: String = ""
     @State private var lastSeenLat: String = ""
-    @State private var ownerName: String = ""
+    @State private var posterName: String = ""
     @State private var phoneNumber: String = ""
     @State private var email: String = ""
     @State private var selectedPhoto: [PhotosPickerItem] = []
@@ -32,7 +33,7 @@ struct LostPetFormView: View {
             return true
         }
 
-        return petName.isEmpty || petDescription.isEmpty || ownerName.isEmpty
+        return petName.isEmpty || petDescription.isEmpty || posterName.isEmpty
             || (phoneNumber.isEmpty && email.isEmpty)
     }
 
@@ -41,18 +42,24 @@ struct LostPetFormView: View {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "y-MM-d"
         let date = dateFormatter.string(from: lastSeen)
+        var photoStrings: [String] = []
 
         var data: [String: Any] = [
-            "name": petName, "animal_type": getPetApiName(type: petType),
-            "description": petDescription, "last_seen_date": date,
-            "last_seen_long": 1, "last_seen_lat": 1,
-            "owner_name": ownerName, "owner_phone": phoneNumber,
-            "owner_email": email,
+            "name": petName,
+            "post_type": type,
+            "animal_type": getPetApiName(type: petType),
+            "description": petDescription,
+            "last_seen_date": date,
+            "last_seen_long": 1,
+            "last_seen_lat": 1,
+            "post_by_name": posterName,
+            "post_by_phone": phoneNumber,
+            "post_by_email": email,
         ]
 
-        if photoData.first != nil {
+        photoData.forEach { photo in
             let width: CGFloat = 512
-            let uiImage = UIImage(data: photoData.first!)!
+            let uiImage = UIImage(data: photo)!
             let scale = width / uiImage.size.width
             let newHeight = uiImage.size.height * scale
             UIGraphicsBeginImageContext(CGSizeMake(width, newHeight))
@@ -60,10 +67,13 @@ struct LostPetFormView: View {
             let newImage = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
 
-            data["photo"] =
+            photoStrings.append(
                 "data:image/png;base64,"
-                + (newImage?.pngData()?.base64EncodedString() ?? "")
+                    + (newImage?.pngData()?.base64EncodedString() ?? "")
+            )
         }
+
+        data["images"] = photoStrings
 
         do {
             let payload = try JSONSerialization.data(
@@ -72,7 +82,7 @@ struct LostPetFormView: View {
             )
 
             let url = URL(
-                string: "https://unrealpixels.app/api/pawsitive-id/lost_pet.php"
+                string: "https://unrealpixels.app/api/pawsitive-id/pet.php"
             )!
             var request = URLRequest(url: url)
             request.setValue(
@@ -93,15 +103,11 @@ struct LostPetFormView: View {
 
                 do {
                     let lostPetData = try JSONDecoder().decode(
-                        LostPetDataApiSingle.self,
+                        PetDataApiSingle.self,
                         from: data!
                     )
-                    UserDefaults.standard.set(
-                        lostPetData.data.id,
-                        forKey: "lostPetId"
-                    )
                     isLoading = false
-                    onClose()
+                    onClose(lostPetData.data)
 
                 } catch {
                     logIssue(message: "Lost pet failed to decode", data: error)
@@ -148,11 +154,10 @@ struct LostPetFormView: View {
                         PhotosPicker(
                             "Select photo",
                             selection: $selectedPhoto,
-                            maxSelectionCount: 1,
                             matching: .images
                         ).onChange(of: selectedPhoto) { _, selectedPhoto in
-                            photoData.removeAll()
                             selectedPhoto.forEach { photo in
+                                // TODO: Check if image already picked.
                                 Task {
                                     if let data =
                                         try? await photo
@@ -163,16 +168,28 @@ struct LostPetFormView: View {
                                 }
                             }
                         }
-                        ForEach(photoData, id: \.self) { photo in
-                            Image(uiImage: UIImage(data: photo)!)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(maxWidth: 150)
+                        if !photoData.isEmpty {
+                            ScrollView(.horizontal) {
+                                HStack {
+                                    ForEach(photoData, id: \.self) { photo in
+                                        Image(uiImage: UIImage(data: photo)!)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 150, height: 150)
+                                            .clipped()
+                                            .padding([.leading, .trailing], 10)
+                                    }
+                                }
+                            }
                         }
                     }
 
-                    Section(header: Text("Owner Details")) {
-                        TextField("Name", text: $ownerName)
+                    Section(
+                        header: Text(
+                            type == "FOUND" ? "Found by" : "Owner details"
+                        )
+                    ) {
+                        TextField("Name", text: $posterName)
                         TextField("Email Address", text: $email)
                             .textContentType(
                                 .emailAddress
@@ -198,5 +215,5 @@ struct LostPetFormView: View {
 }
 
 #Preview {
-    LostPetFormView(onClose: {})
+    PetFormView(onClose: { pet in }, type: .constant("FOUND"))
 }
