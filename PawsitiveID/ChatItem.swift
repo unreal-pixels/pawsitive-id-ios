@@ -9,8 +9,7 @@ import Foundation
 
 struct ChatItem: Codable {
     let id: String
-    let message: String
-    /** Type is "FOUND" or "LOST" */
-    let type: String
-    let post_id: String
+    var message: String
+    var post_id: String
+    let created_at: String
 }

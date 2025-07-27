@@ -9,7 +9,8 @@ import SwiftUI
 
 struct LostPetView: View {
     @State private var isLoading = true
-    @State private var myLostPet: LostPetData?
+    @State private var myLostPet: PetData = petInitiator
+    
     func startView() {
         isLoading = true
         let lostPetId = UserDefaults.standard.string(forKey: "lostPetId")
@@ -17,7 +18,7 @@ struct LostPetView: View {
             do {
                 let url = URL(
                     string:
-                        "https://unrealpixels.app/api/pawsitive-id/lost_pet.php?id=\(lostPetId ?? "")"
+                        "https://unrealpixels.app/api/pawsitive-id/pet.php?id=\(lostPetId ?? "")"
                 )!
                 var request = URLRequest(url: url)
                 request.httpMethod = "GET"
@@ -33,7 +34,7 @@ struct LostPetView: View {
 
                     do {
                         myLostPet = try JSONDecoder().decode(
-                            LostPetDataApiSingle.self,
+                            PetDataApiSingle.self,
                             from: data!
                         ).data
                         isLoading = false
@@ -59,10 +60,17 @@ struct LostPetView: View {
         VStack{
             if isLoading {
                 ProgressView()
-            } else if myLostPet != nil {
-                LostPetDetailsView()
+            } else if myLostPet.id != "0" {
+                PetDetailsView(pet: $myLostPet)
             } else {
-                LostPetFormView(onClose: {startView()})
+                PetFormView(onClose: { pet in
+                    UserDefaults.standard.set(
+                        pet.id,
+                        forKey: "lostPetId"
+                    )
+                    
+                    startView()
+                }, type: .constant("LOST"))
             }
         }.onAppear {
             startView()

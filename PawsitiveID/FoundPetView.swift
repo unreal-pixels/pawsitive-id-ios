@@ -8,40 +8,41 @@
 import SwiftUI
 
 struct FoundPetView: View {
-    @State var foundPets: [FoundPetData] = []
+    @State var pets: [PetData] = []
     @State private var showingPet = false
-    @State private var openedPet: FoundPetData = foundPetInitiator
+    @State private var openedPet: PetData = petInitiator
     @State private var showCreate = false
 
-    func performAPICall() async throws -> [FoundPetData] {
+    func performAPICall() async throws -> [PetData] {
         let url = URL(
             string:
-                "https://unrealpixels.app/api/pawsitive-id/found_pet.php"
+                "https://unrealpixels.app/api/pawsitive-id/pet.php"
         )!
         let (data, _) = try await URLSession.shared.data(from: url)
-        let wrapper = try JSONDecoder().decode(FoundPetDataApi.self, from: data)
+        let wrapper = try JSONDecoder().decode(PetDataApi.self, from: data)
         return wrapper.data
     }
 
-    func viewPet(pet: FoundPetData) {
+    func viewPet(pet: PetData) {
         showingPet = true
         openedPet = pet
     }
 
     var body: some View {
         VStack {
-            GoogleMaps(pets: $foundPets)
+            GoogleMaps(pets: $pets)
                 .containerRelativeFrame(
                     .vertical,
                     count: 100,
                     span: 50,
                     spacing: 0
                 )
-            List(foundPets) { pet in
+            List(pets) { pet in
                 Button(action: { viewPet(pet: pet) }) {
                     HStack {
-                        AsyncImage(url: URL(string: pet.photo ?? genericImage))
-                        { result in
+                        AsyncImage(
+                            url: URL(string: pet.images.first ?? genericImage)
+                        ) { result in
                             result.image?
                                 .resizable()
                                 .scaledToFill()
@@ -74,19 +75,27 @@ struct FoundPetView: View {
             }
             .task {
                 do {
-                    foundPets = try await performAPICall()
+                    pets = try await performAPICall()
                 } catch {
-                    foundPets = []
+                    pets = []
                 }
             }
             .refreshable {}
             .sheet(isPresented: $showingPet) {
-                FoundPetDetailsView(
-                    onClose: {
-                        showingPet = false
-                    },
-                    pet: $openedPet
-                )
+                NavigationStack {
+                    PetDetailsView(pet: $openedPet)
+                        .navigationBarTitle(
+                            openedPet.name,
+                            displayMode: .inline
+                        )
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Close") {
+                                    showingPet = false
+                                }
+                            }
+                        }
+                }
             }
         }.toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -97,10 +106,13 @@ struct FoundPetView: View {
         }
         .sheet(isPresented: $showCreate) {
             NavigationStack {
-                FoundPetFormView(onClose: {pet in
-                    foundPets.insert(pet, at: 0)
-                    showCreate = false
-                })
+                PetFormView(
+                    onClose: { pet in
+                        pets.insert(pet, at: 0)
+                        showCreate = false
+                    },
+                    type: .constant("FOUND")
+                )
                 .navigationBarTitle(
                     "Report found pet",
                     displayMode: .inline

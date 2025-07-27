@@ -11,7 +11,7 @@ import SwiftUI
 var setLocationOnce = false
 
 struct GoogleMaps: UIViewRepresentable {
-    @Binding var pets: [FoundPetData]
+    @Binding var pets: [PetData]
     @StateObject var locationService = LocationService()
 
     func getCamera() -> GMSCameraPosition {
@@ -90,7 +90,7 @@ struct GoogleMaps: UIViewRepresentable {
                 )
             }
 
-            marker.iconView?.tintColor = .blue
+            marker.iconView?.tintColor = pet.post_type == "FOUND" ? .green : .orange
             marker.iconView?.frame = CGRectMake(0, 0, 40, 40)
 
             marker.title = pet.name
