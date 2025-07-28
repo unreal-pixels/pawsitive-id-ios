@@ -17,10 +17,7 @@ struct ContentView: View {
                 }
             }
             Tab("Lost pet", systemImage: "sparkle.magnifyingglass") {
-                NavigationView {
-                    LostPetView()
-                        .navigationTitle("Lost pet")
-                }
+                LostPetView()
             }
             Tab("Pets", systemImage: "pawprint.fill") {
                 NavigationView {
