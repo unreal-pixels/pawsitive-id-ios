@@ -14,6 +14,7 @@ struct MapViewLocation: UIViewRepresentable {
     @Binding var type: String
     @Binding var lat: String
     @Binding var long: String
+    @Binding var imageUrl: String
     @StateObject var locationService = LocationService()
 
     func getCamera() -> GMSCameraPosition {
@@ -25,6 +26,7 @@ struct MapViewLocation: UIViewRepresentable {
     }
 
     func makeUIView(context: Self.Context) -> GMSMapView {
+        setLocationOnceMapView = false
         let options = GMSMapViewOptions()
         options.camera = getCamera()
         options.frame = CGRect.zero
@@ -62,41 +64,50 @@ struct MapViewLocation: UIViewRepresentable {
         }
 
         let marker: GMSMarker = GMSMarker()
+        let markerWidth = 60.0
 
         marker.position = CLLocationCoordinate2D(
             latitude: Double(lat) ?? 1,
             longitude: Double(long) ?? 1
         )
 
-        switch type {
-        case "DOG":
-            marker.iconView = UIImageView(
-                image: UIImage(systemName: "dog.circle")
-            )
-        case "CAT":
-            marker.iconView = UIImageView(
-                image: UIImage(systemName: "cat.circle")
-            )
-        case "RABBIT":
-            marker.iconView = UIImageView(
-                image: UIImage(systemName: "hare.circle")
-            )
-        case "BIRD":
-            marker.iconView = UIImageView(
-                image: UIImage(systemName: "bird.circle")
-            )
-        default:
-            marker.iconView = UIImageView(
-                image: UIImage(systemName: "grid.circle")
-            )
+        marker.iconView = UIImageView(
+            image: UIImage(systemName: "grid.circle")
+        )
+
+        do {
+            let url = URL(string: imageUrl)
+            let data = try? Data(contentsOf: url!)
+            var image: UIImage?
+
+            if let imageData = data {
+                image = UIImage(data: imageData)
+            }
+
+            if image != nil {
+                let uiImageView = UIImageView(
+                    image: image
+                )
+                
+                uiImageView.layer.cornerRadius = markerWidth / 2
+                uiImageView.layer.masksToBounds = true
+                uiImageView.layer.borderWidth = 0
+
+                marker.iconView = uiImageView
+            }
         }
 
         marker.iconView?.tintColor = .blue
-        marker.iconView?.frame = CGRectMake(0, 0, 50, 50)
+        marker.iconView?.frame = CGRectMake(0, 0, markerWidth, markerWidth)
         marker.map = mapView
     }
 }
 
 #Preview {
-    MapViewLocation(type: .constant("CAT"), lat: .constant("34.0549"), long: .constant("-118.2426"))
+    MapViewLocation(
+        type: .constant("CAT"),
+        lat: .constant("34.0549"),
+        long: .constant("-118.2426"),
+        imageUrl: .constant(genericImage)
+    )
 }

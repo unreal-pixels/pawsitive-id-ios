@@ -25,6 +25,7 @@ struct MapPetsView: UIViewRepresentable {
     }
 
     func makeUIView(context: Self.Context) -> GMSMapView {
+        setLocationOnce = false
         let options = GMSMapViewOptions()
         options.camera = getCamera()
         options.frame = CGRect.zero
@@ -61,37 +62,41 @@ struct MapPetsView: UIViewRepresentable {
 
         for pet in pets {
             let marker: GMSMarker = GMSMarker()
+            let markerWidth = 50.0
 
             marker.position = CLLocationCoordinate2D(
                 latitude: Double(pet.last_seen_lat) ?? 0,
                 longitude: Double(pet.last_seen_long) ?? 0
             )
 
-            switch pet.animal_type {
-            case "DOG":
-                marker.iconView = UIImageView(
-                    image: UIImage(systemName: "dog.circle")
-                )
-            case "CAT":
-                marker.iconView = UIImageView(
-                    image: UIImage(systemName: "cat.circle")
-                )
-            case "RABBIT":
-                marker.iconView = UIImageView(
-                    image: UIImage(systemName: "hare.circle")
-                )
-            case "BIRD":
-                marker.iconView = UIImageView(
-                    image: UIImage(systemName: "bird.circle")
-                )
-            default:
-                marker.iconView = UIImageView(
-                    image: UIImage(systemName: "grid.circle")
-                )
+            marker.iconView = UIImageView(
+                image: UIImage(systemName: "grid.circle")
+            )
+
+            do {
+                let url = URL(string: pet.images.first ?? genericImage)
+                let data = try? Data(contentsOf: url!)
+                var image: UIImage?
+
+                if let imageData = data {
+                    image = UIImage(data: imageData)
+                }
+
+                if image != nil {
+                    let uiImageView = UIImageView(
+                        image: image
+                    )
+                    
+                    uiImageView.layer.cornerRadius = markerWidth / 2
+                    uiImageView.layer.masksToBounds = true
+                    uiImageView.layer.borderWidth = 0
+
+                    marker.iconView = uiImageView
+                }
             }
 
-            marker.iconView?.tintColor = pet.post_type == "FOUND" ? .green : .orange
-            marker.iconView?.frame = CGRectMake(0, 0, 40, 40)
+            marker.iconView?.tintColor = .blue
+            marker.iconView?.frame = CGRectMake(0, 0, markerWidth, markerWidth)
 
             marker.title = pet.name
             marker.snippet = pet.description
@@ -101,5 +106,5 @@ struct MapPetsView: UIViewRepresentable {
 }
 
 #Preview {
-    MapPetsView(pets: .constant([]))
+    MapPetsView(pets: .constant([petInitiator]))
 }
