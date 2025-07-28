@@ -16,6 +16,7 @@ class MapSearch: UIViewController, GMSMapViewDelegate {
     private var mapView = GMSMapView.init()
 
     override func viewDidLoad() {
+        setLocationOnceSearch = false
         let options = GMSMapViewOptions()
         options.frame = CGRect.zero
         mapView = GMSMapView.init(options: options)

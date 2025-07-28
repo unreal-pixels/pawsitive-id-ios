@@ -34,7 +34,8 @@ struct PetFormView: View {
             return true
         }
 
-        return petName.isEmpty || lastSeenLat == nil || lastSeenLong == nil
+        return (type == "LOST" ? petName.isEmpty : false) || lastSeenLat == nil
+            || lastSeenLong == nil
             || petDescription.isEmpty || posterName.isEmpty
             || (phoneNumber.isEmpty && email.isEmpty)
     }
@@ -132,7 +133,10 @@ struct PetFormView: View {
             HStack {
                 Form {
                     Section(header: Text("Pet Info")) {
-                        TextField("Name", text: $petName)
+                        TextField(
+                            "Name\(type == "FOUND" ? " (optional)" : "")",
+                            text: $petName
+                        )
                         Picker("Pet type", selection: $petType) {
                             Text("Cat").tag(AnimalType.Cat)
                             Text("Dog").tag(AnimalType.Dog)
@@ -159,19 +163,22 @@ struct PetFormView: View {
                             HStack {
                                 Text("Select location")
                                 Spacer()
-                                if (lastSeenLat != nil && lastSeenLong != nil) {
-                                    Text("\(lastSeenLat ?? 1), \(lastSeenLong ?? 1)")
+                                if lastSeenLat != nil && lastSeenLong != nil {
+                                    Text(
+                                        "\(lastSeenLat ?? 1), \(lastSeenLong ?? 1)"
+                                    )
                                 }
                             }
                         }
                         PhotosPicker(
-                            "Select photo",
+                            "Select photos",
                             selection: $selectedPhoto,
                             matching: .images
                         ).onChange(of: selectedPhoto) { _, selectedPhoto in
                             selectedPhoto.forEach { photo in
-                                // TODO: Check if image already picked.
                                 Task {
+                                    photoData.removeAll()
+
                                     if let data =
                                         try? await photo
                                         .loadTransferable(type: Data.self)

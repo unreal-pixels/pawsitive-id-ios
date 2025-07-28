@@ -7,9 +7,6 @@
 
 import Foundation
 
-let genericImage =
-    "https://unrealpixels.app/api/pawsitive-id/images/generic.jpg"
-
 func isValidEmail(_ email: String) -> Bool {
     let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
     let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
@@ -64,5 +61,16 @@ func getFormattedDate(_ dateString: String) -> String {
         return date.formatted(date: .long, time: .omitted)
     } else {
         return dateString
+    }
+}
+
+func getFormattedDateTime(_ dateTimeString: String) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "y-MM-d HH:mm:ss"
+
+    if let date = dateFormatter.date(from: dateTimeString) {
+        return date.formatted(date: .long, time: .shortened)
+    } else {
+        return dateTimeString
     }
 }

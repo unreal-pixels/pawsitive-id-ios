@@ -25,7 +25,7 @@ struct PetDetailsView: View {
         let data: [String: Any] = [
             "message": newComment,
             "type": pet.post_type,
-            "post_id": Int(pet.id) ?? 0
+            "post_id": Int(pet.id) ?? 0,
         ]
 
         do {
@@ -33,7 +33,7 @@ struct PetDetailsView: View {
                 withJSONObject: data,
                 options: []
             )
-            
+
             print(payload.base64EncodedString())
 
             let url = URL(
@@ -61,7 +61,7 @@ struct PetDetailsView: View {
                         ChatItemApiSingle.self,
                         from: data!
                     )
-                    
+
                     pet.chats.insert(chatData.data, at: 0)
                     isLoading = false
                 } catch {
@@ -94,6 +94,7 @@ struct PetDetailsView: View {
                                             .scaledToFill()
                                             .frame(
                                                 width: 280,
+                                                height: 250,
                                                 alignment: .center
                                             )
                                             .clipped()
@@ -171,9 +172,26 @@ struct PetDetailsView: View {
                     }
                     Section {
                         ForEach(pet.chats, id: \.self) { chat in
-                            VStack {
+                            VStack(alignment: .leading, spacing: 0) {
+                                HStack(alignment: .top, spacing: 0) {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .foregroundStyle(.gray)
+                                        .frame(width: 40, height: 40)
+                                        .padding([.trailing], 10)
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text("Guest")
+                                            .font(.headline)
+                                            .padding([.bottom], 5)
+                                        Text(getFormattedDateTime(chat.created_at))
+                                            .font(.caption)
+                                            .italic()
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding([.bottom], 10)
+                                }
                                 Text(chat.message)
-                                Text(getFormattedDate(chat.created_at))
+                                    .font(.callout)
                             }
                         }
                         Button(action: {
@@ -194,6 +212,7 @@ struct PetDetailsView: View {
                             type: $pet.animal_type,
                             lat: $pet.last_seen_lat,
                             long: $pet.last_seen_long,
+                            imageUrl: .constant(pet.images.first ?? genericImage)
                         )
                     }
                     .navigationBarTitle(

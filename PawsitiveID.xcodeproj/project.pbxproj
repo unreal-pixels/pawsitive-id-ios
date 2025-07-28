@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		63186D8A2E2B711C00409C94 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 63186D892E2B711C00409C94 /* GoogleMaps */; };
+		637655452E383026008DF881 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637655442E383026008DF881 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		637655442E383026008DF881 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = PawsitiveID/Constants.swift; sourceTree = "<group>"; };
 		63ECEE632E28B490006C258F /* PawsitiveID.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PawsitiveID.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -50,6 +52,7 @@
 		63ECEE5A2E28B490006C258F = {
 			isa = PBXGroup;
 			children = (
+				637655442E383026008DF881 /* Constants.swift */,
 				63ECEE652E28B490006C258F /* PawsitiveID */,
 				63ECEE642E28B490006C258F /* Products */,
 			);
@@ -141,6 +144,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				637655452E383026008DF881 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

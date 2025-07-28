@@ -60,5 +60,5 @@ let petInitiator = PetData(
     created_at: "2025-07-23 12:41:05",
     reunited: false,
     images: [],
-    chats: []
+    chats: chatInitiator
 )
