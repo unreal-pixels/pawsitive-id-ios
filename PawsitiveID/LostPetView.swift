@@ -10,7 +10,7 @@ import SwiftUI
 struct LostPetView: View {
     @State private var isLoading = true
     @State private var myLostPet: PetData = petInitiator
-    
+
     func startView() {
         isLoading = true
         let lostPetId = UserDefaults.standard.string(forKey: "lostPetId")
@@ -57,23 +57,28 @@ struct LostPetView: View {
     }
 
     var body: some View {
-        VStack{
-            if isLoading {
-                ProgressView()
-            } else if myLostPet.id != "0" {
-                PetDetailsView(pet: $myLostPet)
-            } else {
-                PetFormView(onClose: { pet in
-                    UserDefaults.standard.set(
-                        pet.id,
-                        forKey: "lostPetId"
+        NavigationView {
+            VStack {
+                if isLoading {
+                    ProgressView()
+                } else if myLostPet.id != "0" {
+                    MyLostPetView(pet: $myLostPet)
+                } else {
+                    PetFormView(
+                        onClose: { pet in
+                            UserDefaults.standard.set(
+                                pet.id,
+                                forKey: "lostPetId"
+                            )
+
+                            startView()
+                        },
+                        type: .constant("LOST")
                     )
-                    
-                    startView()
-                }, type: .constant("LOST"))
-            }
-        }.onAppear {
-            startView()
+                }
+            }.onAppear {
+                startView()
+            }.navigationTitle( isLoading ? "Lost Pet" : myLostPet.id != "0" ? "My Lost Pet" : "Report lost pet")
         }
     }
 
