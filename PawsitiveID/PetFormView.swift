@@ -16,13 +16,14 @@ struct PetFormView: View {
     @State private var petType: AnimalType = .Cat
     @State private var petDescription: String = ""
     @State private var lastSeen: Date = Date()
-    @State private var lastSeenLong: String = ""
-    @State private var lastSeenLat: String = ""
+    @State private var lastSeenLong: CLLocationDegrees?
+    @State private var lastSeenLat: CLLocationDegrees?
     @State private var posterName: String = ""
     @State private var phoneNumber: String = ""
     @State private var email: String = ""
     @State private var selectedPhoto: [PhotosPickerItem] = []
     @State private var photoData: [Data] = []
+    @State private var showLocationPicker = false
 
     func isDisabled() -> Bool {
         if !email.isEmpty && !isValidEmail(email) {
@@ -33,7 +34,8 @@ struct PetFormView: View {
             return true
         }
 
-        return petName.isEmpty || petDescription.isEmpty || posterName.isEmpty
+        return petName.isEmpty || lastSeenLat == nil || lastSeenLong == nil
+            || petDescription.isEmpty || posterName.isEmpty
             || (phoneNumber.isEmpty && email.isEmpty)
     }
 
@@ -50,8 +52,8 @@ struct PetFormView: View {
             "animal_type": getPetApiName(type: petType),
             "description": petDescription,
             "last_seen_date": date,
-            "last_seen_long": 1,
-            "last_seen_lat": 1,
+            "last_seen_long": lastSeenLong ?? 1,
+            "last_seen_lat": lastSeenLat ?? 1,
             "post_by_name": posterName,
             "post_by_phone": phoneNumber,
             "post_by_email": email,
@@ -151,6 +153,17 @@ struct PetFormView: View {
                             in: ...Date(),
                             displayedComponents: .date
                         ).datePickerStyle(.compact)
+                        Button(action: {
+                            showLocationPicker = true
+                        }) {
+                            HStack {
+                                Text("Select location")
+                                Spacer()
+                                if (lastSeenLat != nil && lastSeenLong != nil) {
+                                    Text("\(lastSeenLat ?? 1), \(lastSeenLong ?? 1)")
+                                }
+                            }
+                        }
                         PhotosPicker(
                             "Select photo",
                             selection: $selectedPhoto,
@@ -207,6 +220,31 @@ struct PetFormView: View {
                             Text("Submit")
                         }.disabled(isDisabled())
                         Spacer()
+                    }
+                }
+            }
+            .sheet(isPresented: $showLocationPicker) {
+                NavigationStack {
+                    VStack {
+                        MapSearchView(
+                            onChange: { coordinates in
+                                lastSeenLat = coordinates.latitude
+                                lastSeenLong = coordinates.longitude
+                            },
+                            presetLat: $lastSeenLat,
+                            presetLong: $lastSeenLong,
+                        )
+                    }
+                    .navigationBarTitle(
+                        "Select a location",
+                        displayMode: .inline
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Close") {
+                                showLocationPicker = false
+                            }
+                        }
                     }
                 }
             }

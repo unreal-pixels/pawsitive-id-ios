@@ -16,16 +16,16 @@ struct ContentView: View {
                         .navigationTitle("Home")
                 }
             }
-            Tab("Lost a pet", systemImage: "sparkle.magnifyingglass") {
+            Tab("Lost pet", systemImage: "sparkle.magnifyingglass") {
                 NavigationView {
                     LostPetView()
-                        .navigationTitle("Lost a pet")
+                        .navigationTitle("Lost pet")
                 }
             }
-            Tab("Found pets", systemImage: "pawprint.fill") {
+            Tab("Pets", systemImage: "pawprint.fill") {
                 NavigationView {
                     FoundPetView()
-                        .navigationTitle("Found pets")
+                        .navigationTitle("Pets")
                 }
             }
             Tab("Account", systemImage: "person.fill") {

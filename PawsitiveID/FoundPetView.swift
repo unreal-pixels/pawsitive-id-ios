@@ -7,11 +7,18 @@
 
 import SwiftUI
 
+enum FilterType {
+    case Lost
+    case Found
+    case All
+}
+
 struct FoundPetView: View {
     @State var pets: [PetData] = []
     @State private var showingPet = false
     @State private var openedPet: PetData = petInitiator
     @State private var showCreate = false
+    @State private var filterView: FilterType = .Lost
 
     func performAPICall() async throws -> [PetData] {
         let url = URL(
@@ -28,6 +35,12 @@ struct FoundPetView: View {
         openedPet = pet
     }
 
+    // would be nice to filter map too. But struggling with filtering binding array
+    func filterPets(_ pet: PetData) -> Bool {
+        return filterView == .All
+            ? true : pet.post_type == (filterView == .Lost ? "LOST" : "FOUND")
+    }
+
     var body: some View {
         VStack {
             GoogleMaps(pets: $pets)
@@ -37,7 +50,14 @@ struct FoundPetView: View {
                     span: 50,
                     spacing: 0
                 )
-            List(pets) { pet in
+            Picker("Filter", selection: $filterView) {
+                Text("Lost").tag(FilterType.Lost)
+                Text("Found").tag(FilterType.Found)
+                Text("All").tag(FilterType.All)
+            }
+            .pickerStyle(.segmented)
+            .padding(10)
+            List(pets.filter { filterPets($0) }) { pet in
                 Button(action: { viewPet(pet: pet) }) {
                     HStack {
                         AsyncImage(
