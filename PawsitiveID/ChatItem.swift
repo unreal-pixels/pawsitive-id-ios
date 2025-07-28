@@ -7,7 +7,12 @@
 
 import Foundation
 
-struct ChatItem: Codable {
+struct ChatItemApiSingle: Codable {
+    let status: String
+    let data: ChatItem
+}
+
+struct ChatItem: Codable, Hashable {
     let id: String
     var message: String
     var post_id: String

@@ -1,5 +1,5 @@
 //
-//  GoogleMaps.swift
+//  MapPetsView.swift
 //  PawsitiveID
 //
 //  Created by David Bradshaw on 7/18/25.
@@ -10,7 +10,7 @@ import SwiftUI
 
 var setLocationOnce = false
 
-struct GoogleMaps: UIViewRepresentable {
+struct MapPetsView: UIViewRepresentable {
     @Binding var pets: [PetData]
     @StateObject var locationService = LocationService()
 
@@ -101,5 +101,5 @@ struct GoogleMaps: UIViewRepresentable {
 }
 
 #Preview {
-    GoogleMaps(pets: .constant([]))
+    MapPetsView(pets: .constant([]))
 }

@@ -35,7 +35,8 @@ struct FoundPetView: View {
         openedPet = pet
     }
 
-    // would be nice to filter map too. But struggling with filtering binding array
+    // would be nice to filter map too.
+    // But struggling with filtering binding array, could do it from Map itself?
     func filterPets(_ pet: PetData) -> Bool {
         return filterView == .All
             ? true : pet.post_type == (filterView == .Lost ? "LOST" : "FOUND")
@@ -43,7 +44,7 @@ struct FoundPetView: View {
 
     var body: some View {
         VStack {
-            GoogleMaps(pets: $pets)
+            MapPetsView(pets: $pets)
                 .containerRelativeFrame(
                     .vertical,
                     count: 100,
