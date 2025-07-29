@@ -46,6 +46,7 @@ struct FoundPetView: View {
 
     func viewPet(pet: PetData) {
         openedPet = pet
+        print(openedPet.name)
         showingPet = true
     }
 
@@ -102,7 +103,7 @@ struct FoundPetView: View {
                     .zIndex(2)
                 }
             }
-            .sheet(isPresented: $showingPet) {
+            .sheet(isPresented: $showingPet) { [openedPet] in
                 NavigationStack {
                     PetDetailsView(
                         onClose: { reason in
