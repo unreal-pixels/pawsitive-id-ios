@@ -128,7 +128,7 @@ struct PetFormView: View {
 
     var body: some View {
         if isLoading {
-            ProgressView()
+            LoadingView()
         } else {
             HStack {
                 Form {

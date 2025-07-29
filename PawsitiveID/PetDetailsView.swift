@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PetDetailsView: View {
+    let onClose: (_ reason: String) -> Void
     @Binding var pet: PetData
     @State private var isLoading = false
     @State private var showingPetLocation = false
@@ -33,8 +34,6 @@ struct PetDetailsView: View {
                 withJSONObject: data,
                 options: []
             )
-
-            print(payload.base64EncodedString())
 
             let url = URL(
                 string: "https://unrealpixels.app/api/pawsitive-id/chat.php"
@@ -79,7 +78,7 @@ struct PetDetailsView: View {
 
     var body: some View {
         if isLoading {
-            ProgressView()
+            LoadingView()
         } else {
             VStack {
                 Form {
@@ -155,15 +154,20 @@ struct PetDetailsView: View {
                         }
                         if pet.post_by_phone != nil && pet.post_by_phone != "" {
                             Button(action: {
+                                var phone = pet.post_by_phone ?? "";
+                                phone = phone.replacingOccurrences(of: "-", with: "")
+                                phone = phone.replacingOccurrences(of: "(", with: "")
+                                phone = phone.replacingOccurrences(of: ")", with: "")
+                                
                                 let url = URL(
-                                    string: "tel://\(pet.post_by_phone ?? "")"
+                                    string: "tel://\(phone)"
                                 )!
                                 UIApplication.shared.open(url)
                             }) {
                                 HStack {
                                     Text("Call about pet")
                                     Spacer()
-                                    Image(systemName: "phone.circle.fill")
+                                    Image(systemName: "phone.fill")
                                 }
                             }
                         }
@@ -202,6 +206,25 @@ struct PetDetailsView: View {
                         }
                     } header: {
                         Text("Comments")
+                    }
+                    Section {
+                        Button(action: {
+                            markReunitedPet(id: pet.id, callback: {
+                                onClose("DELETE")
+                            })
+                        }) {
+                            Text("Pet reunited")
+                        }
+                        Button(action: {
+                            deletePet(id: pet.id, callback: {
+                                onClose("DELETE")
+                            })
+                        }) {
+                            Text("Delete")
+                                .foregroundStyle(.red)
+                        }
+                    } header: {
+                        Text("Actions")
                     }
                 }
             }
@@ -248,5 +271,5 @@ struct PetDetailsView: View {
 
 #Preview {
     @Previewable @State var pet = petInitiator
-    PetDetailsView(pet: $pet)
+    PetDetailsView(onClose: { reason in }, pet: $pet)
 }

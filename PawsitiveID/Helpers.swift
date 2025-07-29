@@ -74,3 +74,78 @@ func getFormattedDateTime(_ dateTimeString: String) -> String {
         return dateTimeString
     }
 }
+
+func deletePet(id: String, callback: @escaping () -> Void) {
+    let url = URL(
+        string: "https://unrealpixels.app/api/pawsitive-id/pet.php?id=\(id)"
+    )!
+    var request = URLRequest(url: url)
+    request.setValue(
+        "application/json; charset=utf-8",
+        forHTTPHeaderField: "Content-Type"
+    )
+    request.httpMethod = "DELETE"
+
+    let session = URLSession.shared.dataTask(with: request) {
+        data,
+        response,
+        error in
+        if error != nil || data == nil {
+            logIssue(message: "Failed to POST pet chat", data: error)
+            return
+        }
+
+        callback()
+    }
+    session.resume()
+}
+
+func markReunitedPet(id: String, callback: @escaping () -> Void) {
+    let url = URL(
+        string: "https://unrealpixels.app/api/pawsitive-id/pet.php?id=\(id)"
+    )!
+    var request = URLRequest(url: url)
+    request.setValue(
+        "application/json; charset=utf-8",
+        forHTTPHeaderField: "Content-Type"
+    )
+    request.httpMethod = "PUT"
+    
+    let data: [String: Any] = [
+        "reunited": true,
+    ]
+
+    do {
+        let payload = try JSONSerialization.data(
+            withJSONObject: data,
+            options: []
+        )
+
+        let url = URL(
+            string: "https://unrealpixels.app/api/pawsitive-id/pet.php?id=\(id)"
+        )!
+        var request = URLRequest(url: url)
+        request.setValue(
+            "application/json; charset=utf-8",
+            forHTTPHeaderField: "Content-Type"
+        )
+        request.httpMethod = "PUT"
+        request.httpBody = payload
+        let session = URLSession.shared.dataTask(with: request) {
+            data,
+            response,
+            error in
+            if error != nil || data == nil {
+                logIssue(message: "Failed to PUT pet", data: error)
+                return
+            }
+
+            callback()
+        }
+        
+        session.resume()
+
+    } catch {
+        logIssue(message: "Failed to PUT pet", data: error)
+    }
+}

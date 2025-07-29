@@ -14,19 +14,33 @@ enum FilterType {
 }
 
 struct FoundPetView: View {
+    @State var isLoading = true
     @State var pets: [PetData] = []
     @State private var showingPet = false
     @State private var openedPet: PetData = petInitiator
     @State private var showCreate = false
     @State private var filterView: FilterType = .Lost
 
+    func removeOpenPet() {
+        let index = pets.firstIndex(where: { pet in
+            return pet.id == openedPet.id
+        })
+
+        if index != nil {
+            pets.remove(at: index!)
+        }
+    }
+
     func performAPICall() async throws -> [PetData] {
+        isLoading = true
         let url = URL(
             string:
                 "https://unrealpixels.app/api/pawsitive-id/pet.php"
         )!
         let (data, _) = try await URLSession.shared.data(from: url)
         let wrapper = try JSONDecoder().decode(PetDataApi.self, from: data)
+
+        isLoading = false
         return wrapper.data
     }
 
@@ -44,7 +58,7 @@ struct FoundPetView: View {
 
     var body: some View {
         VStack {
-            MapPetsView(pets: $pets)
+            MapPetsView(pets: $pets, filter: $filterView)
                 .containerRelativeFrame(
                     .vertical,
                     count: 100,
@@ -71,21 +85,46 @@ struct FoundPetView: View {
                     pets = []
                 }
             }
-            .refreshable {}
+            .refreshable {
+                do {
+                    pets = try await performAPICall()
+                } catch {
+                    pets = []
+                }
+            }
+            .overlay(alignment: .topLeading) {
+                if isLoading {
+                    ZStack {
+                        Color.white
+                            .ignoresSafeArea()
+                        LoadingView()
+                    }
+                    .zIndex(2)
+                }
+            }
             .sheet(isPresented: $showingPet) {
                 NavigationStack {
-                    PetDetailsView(pet: $openedPet)
-                        .navigationBarTitle(
-                            openedPet.name,
-                            displayMode: .inline
-                        )
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Close") {
-                                    showingPet = false
-                                }
+                    PetDetailsView(
+                        onClose: { reason in
+                            if reason == "DELETE" {
+                                removeOpenPet()
+                            }
+
+                            showingPet = false
+                        },
+                        pet: $openedPet
+                    )
+                    .navigationBarTitle(
+                        openedPet.name,
+                        displayMode: .inline
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Close") {
+                                showingPet = false
                             }
                         }
+                    }
                 }
             }
         }.toolbar {

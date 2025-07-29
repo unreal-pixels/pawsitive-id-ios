@@ -60,7 +60,7 @@ struct LostPetView: View {
         NavigationView {
             VStack {
                 if isLoading {
-                    ProgressView()
+                    LoadingView()
                 } else if myLostPet.id != "0" {
                     MyLostPetView(pet: $myLostPet)
                 } else {

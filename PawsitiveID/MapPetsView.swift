@@ -12,6 +12,7 @@ var setLocationOnce = false
 
 struct MapPetsView: UIViewRepresentable {
     @Binding var pets: [PetData]
+    @Binding var filter: FilterType
     @StateObject var locationService = LocationService()
 
     func getCamera() -> GMSCameraPosition {
@@ -60,7 +61,14 @@ struct MapPetsView: UIViewRepresentable {
             mapView.isMyLocationEnabled = true
         }
 
-        for pet in pets {
+        let petToUse = pets.filter {
+            filter == .All
+                ? true : $0.post_type == (filter == .Lost ? "LOST" : "FOUND")
+        }
+        
+        mapView.clear()
+
+        for pet in petToUse {
             let marker: GMSMarker = GMSMarker()
             let markerWidth = 50.0
 
@@ -86,7 +94,7 @@ struct MapPetsView: UIViewRepresentable {
                     let uiImageView = UIImageView(
                         image: image
                     )
-                    
+
                     uiImageView.layer.cornerRadius = markerWidth / 2
                     uiImageView.layer.masksToBounds = true
                     uiImageView.layer.borderWidth = 0
@@ -106,5 +114,8 @@ struct MapPetsView: UIViewRepresentable {
 }
 
 #Preview {
-    MapPetsView(pets: .constant([petInitiator]))
+    MapPetsView(
+        pets: .constant([petInitiator]),
+        filter: .constant(FilterType.All)
+    )
 }
