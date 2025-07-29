@@ -31,8 +31,8 @@ struct FoundPetView: View {
     }
 
     func viewPet(pet: PetData) {
-        showingPet = true
         openedPet = pet
+        showingPet = true
     }
 
     // would be nice to filter map too.

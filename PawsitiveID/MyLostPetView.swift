@@ -14,14 +14,41 @@ struct ShelterInfo: Hashable {
 
 struct MyLostPetView: View {
     @Binding var pet: PetData
+    @State var foundPets: [PetData] = []
+    @State var showingPet = false
+    @State var openedPet: PetData = petInitiator
     private let shelterData: [ShelterInfo] = [
-        ShelterInfo(name: "Pets in Need", phone: "(650) 496-5971"),
-        ShelterInfo(name: "Friends of The Alameda Animal Shelter", phone: "(510) 337-8565"),
-        ShelterInfo(name: "County of Santa Clara Animal Services", phone: "(408) 686-3900"),
-        ShelterInfo(name: "East County Animal Shelter", phone: "(925) 803-7040"),
-        ShelterInfo(name: "Hayward Animal Shelter", phone: "(510) 293-7200")
+        ShelterInfo(name: "Pets in Need", phone: "6504965971"),
+        ShelterInfo(
+            name: "Friends of The Alameda Animal Shelter",
+            phone: "5103378565"
+        ),
+        ShelterInfo(
+            name: "County of Santa Clara Animal Services",
+            phone: "4086863900"
+        ),
+        ShelterInfo(
+            name: "East County Animal Shelter",
+            phone: "9258037040"
+        ),
+        ShelterInfo(name: "Hayward Animal Shelter", phone: "5102937200"),
     ]
     
+    func viewPet(foundPet: PetData) {
+        openedPet = foundPet
+        showingPet = true
+    }
+
+    func getFoundPets() async throws -> [PetData] {
+        let url = URL(
+            string:
+                "https://unrealpixels.app/api/pawsitive-id/pet.php"
+        )!
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let wrapper = try JSONDecoder().decode(PetDataApi.self, from: data)
+        return wrapper.data.filter { foundPet in return foundPet.post_type == "FOUND" && foundPet.animal_type == pet.animal_type }
+    }
+
     var body: some View {
         VStack {
             HStack {
@@ -64,26 +91,57 @@ struct MyLostPetView: View {
 
             List {
                 Section(header: Text("Nearby Animal Shelters")) {
-                    ForEach(shelterData, id: \.self){data in
-                        Button(action: {}){
+                    ForEach(shelterData, id: \.self) { data in
+                        Button(action: {
+                            let url = URL(
+                                string: "tel://\(data.phone)"
+                            )!
+                            UIApplication.shared.open(url)
+                        }) {
                             HStack {
                                 Text(data.name).foregroundStyle(.black)
                                 Spacer()
-                                Image(systemName: "phone.fill" ).foregroundStyle(.blue).padding([.leading])
+                                Image(systemName: "phone.fill").foregroundStyle(
+                                    .blue
+                                ).padding([.leading])
                             }
                         }
-                        
+
                     }
                 }
-            }
-            
-            List {
-                Section(header: Text("Recently found pets")){
-                    Image(systemName: "cat.fill")
+                Section(header: Text("Recently found pets")) {
+                    ForEach(foundPets, id: \.self) { foundPet in
+                        Button(action: { viewPet(foundPet: foundPet) }) {
+                            PetListCardView(pet: .constant(foundPet))
+                                .foregroundStyle(.black)
+                        }
+                    }
+                }
+
+            }.task {
+                do {
+                    foundPets = try await getFoundPets()
+                } catch {
+                    foundPets = []
                 }
             }
         }
-        Spacer()
+        .sheet(isPresented: $showingPet) {
+            NavigationStack {
+                PetDetailsView(pet: $openedPet)
+                    .navigationBarTitle(
+                        openedPet.name,
+                        displayMode: .inline
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Close") {
+                                showingPet = false
+                            }
+                        }
+                    }
+            }
+        }
     }
 }
 
