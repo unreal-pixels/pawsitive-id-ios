@@ -25,7 +25,7 @@ struct PetDataApiSingle: Codable {
     let data: PetData
 }
 
-struct PetData: Codable, Identifiable {
+struct PetData: Codable, Identifiable, Hashable {
     let id: String
     var name: String
     /** Post Type is "FOUND" or "LOST" */
