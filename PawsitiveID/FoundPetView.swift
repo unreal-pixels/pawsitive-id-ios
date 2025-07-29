@@ -46,7 +46,6 @@ struct FoundPetView: View {
 
     func viewPet(pet: PetData) {
         openedPet = pet
-        print(openedPet.name)
         showingPet = true
     }
 
