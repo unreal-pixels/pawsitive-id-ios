@@ -5,6 +5,7 @@
 //  Created by Bi Nguyen on 7/28/25.
 //
 
+import MapKit
 import SwiftUI
 
 struct ShelterInfo: Hashable {
@@ -18,22 +19,7 @@ struct MyLostPetView: View {
     @State var foundPets: [PetData] = []
     @State var showingPet = false
     @State var openedPet: PetData = petInitiator
-    private let shelterData: [ShelterInfo] = [
-        ShelterInfo(name: "Pets in Need", phone: "6504965971"),
-        ShelterInfo(
-            name: "Friends of The Alameda Animal Shelter",
-            phone: "5103378565"
-        ),
-        ShelterInfo(
-            name: "County of Santa Clara Animal Services",
-            phone: "4086863900"
-        ),
-        ShelterInfo(
-            name: "East County Animal Shelter",
-            phone: "9258037040"
-        ),
-        ShelterInfo(name: "Hayward Animal Shelter", phone: "5102937200"),
-    ]
+    @State private var shelterData: [ShelterInfo] = []
 
     func removeOpenPet() {
         let index = foundPets.firstIndex(where: { foundPet in
@@ -50,8 +36,72 @@ struct MyLostPetView: View {
         showingPet = true
     }
 
+    func performSearch() {
+        shelterData = []
+        let searchRequest = MKLocalSearch.Request()
+        searchRequest.naturalLanguageQuery = "Pet Shelter"
+
+        let searchRegion = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: Double(pet.last_seen_lat) ?? 34.0549,
+                longitude: Double(pet.last_seen_long) ?? -118.2426
+            ),
+            latitudinalMeters: 10000,
+            longitudinalMeters: 10000
+        )
+
+        searchRequest.region = searchRegion
+
+        let search = MKLocalSearch(request: searchRequest)
+
+        search.start { response, error in
+            if let error = error {
+                logIssue(
+                    message: "Got error searching for shelters",
+                    data: error
+                )
+                return
+            }
+
+            guard let response = response else {
+                logIssue(
+                    message: "Got no response searching for shelters",
+                    data: error
+                )
+                return
+            }
+
+            for item in response.mapItems {
+                if !(item.phoneNumber ?? "").isEmpty
+                    && !(item.name ?? "").isEmpty
+                {
+                    let index = shelterData.firstIndex(where: { pushedItem in
+                        return pushedItem.name == item.name
+                    })
+
+                    if index == nil {
+                        shelterData.append(
+                            ShelterInfo(
+                                name: (item.name ?? "").trimmingCharacters(
+                                    in: .whitespacesAndNewlines
+                                ),
+                                phone: item.phoneNumber ?? ""
+                            )
+                        )
+                    }
+                }
+
+                if shelterData.count >= 5 {
+                    break
+                }
+            }
+        }
+    }
+
     func getFoundPets() async throws -> [PetData] {
         isLoading = true
+
+        performSearch()
 
         let url = URL(
             string:

@@ -5,6 +5,7 @@
 //  Created by Bi Nguyen on 7/17/25.
 //
 
+import CoreLocation
 import PhotosUI
 import SwiftUI
 
@@ -24,6 +25,7 @@ struct PetFormView: View {
     @State private var selectedPhoto: [PhotosPickerItem] = []
     @State private var photoData: [Data] = []
     @State private var showLocationPicker = false
+    @State private var coordinateDisplayName = ""
 
     func isDisabled() -> Bool {
         if !email.isEmpty && !isValidEmail(email) {
@@ -40,17 +42,45 @@ struct PetFormView: View {
             || (phoneNumber.isEmpty && email.isEmpty)
     }
 
+    func getCoordinateName(coordinates: CLLocationCoordinate2D) {
+        coordinateDisplayName = ""
+
+        let geocoder = CLGeocoder()
+        let location = CLLocation(
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude
+        )
+
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            if let error = error {
+                logIssue(
+                    message: "Unable to get name from coordinates",
+                    data: error
+                )
+                return
+            }
+
+            if let placemarks = placemarks, let placemark = placemarks.first {
+                var list = [placemark.name ?? "", placemark.locality ?? "", placemark.administrativeArea ?? ""]
+                list = list.filter { return !$0.isEmpty}
+                coordinateDisplayName = list.joined(separator: ", ")
+            }
+        }
+
+    }
+
     func submitForm() {
         isLoading = true
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "y-MM-d"
         let date = dateFormatter.string(from: lastSeen)
         var photoStrings: [String] = []
+        let animalType = getPetApiName(type: petType)
 
         var data: [String: Any] = [
-            "name": petName,
+            "name": petName.isEmpty ? "Found \(getPetType(type: animalType))" : petName,
             "post_type": type,
-            "animal_type": getPetApiName(type: petType),
+            "animal_type": animalType,
             "description": petDescription,
             "last_seen_date": date,
             "last_seen_long": lastSeenLong ?? 1,
@@ -160,10 +190,14 @@ struct PetFormView: View {
                         Button(action: {
                             showLocationPicker = true
                         }) {
-                            HStack {
+                            VStack(alignment: .leading) {
                                 Text("Select location")
-                                Spacer()
-                                if lastSeenLat != nil && lastSeenLong != nil {
+                                if (!coordinateDisplayName.isEmpty) {
+                                    Text(coordinateDisplayName)
+                                        .padding([.top], 5)
+                                        .font(.callout)
+                                        .foregroundStyle(.black)
+                                } else if lastSeenLat != nil && lastSeenLong != nil {
                                     Text(
                                         "\(lastSeenLat ?? 1), \(lastSeenLong ?? 1)"
                                     )
@@ -237,6 +271,7 @@ struct PetFormView: View {
                             onChange: { coordinates in
                                 lastSeenLat = coordinates.latitude
                                 lastSeenLong = coordinates.longitude
+                                getCoordinateName(coordinates: coordinates)
                             },
                             presetLat: $lastSeenLat,
                             presetLong: $lastSeenLong,
