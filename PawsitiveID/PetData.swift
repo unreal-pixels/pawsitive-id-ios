@@ -41,6 +41,9 @@ struct PetData: Codable, Identifiable, Hashable {
     var post_by_email: String?
     let created_at: String
     var reunited: Bool
+    var reunited_images: [String]
+    let reunited_date: String?
+    let reunited_description: String?
     var images: [String]
     var chats: [ChatItem]
 }
@@ -59,6 +62,9 @@ let petInitiator = PetData(
     post_by_email: "test@example.com",
     created_at: "2025-07-23 12:41:05",
     reunited: false,
+    reunited_images: [],
+    reunited_date: nil,
+    reunited_description: nil,
     images: [],
     chats: chatInitiator
 )
