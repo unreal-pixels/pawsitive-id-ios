@@ -14,6 +14,7 @@ struct ShelterInfo: Hashable {
 }
 
 struct MyLostPetView: View {
+    let onClose: () -> Void
     @Binding var pet: PetData
     @State var isLoading = true
     @State var foundPets: [PetData] = []
@@ -132,7 +133,6 @@ struct MyLostPetView: View {
                         .clipped()
                         .clipShape(.circle)
                 }
-
                 VStack(alignment: .leading) {
                     Text(pet.name).fontWeight(.bold)
                         .multilineTextAlignment(.leading)
@@ -189,6 +189,32 @@ struct MyLostPetView: View {
                                 .foregroundStyle(.black)
                         }
                     }
+                }
+                Section {
+                    Button(action: {
+                        markReunitedPet(
+                            id: pet.id,
+                            callback: {
+                                onClose()
+                            }
+                        )
+                    }) {
+                        Text("Pet reunited")
+                            .foregroundStyle(.blue)
+                    }
+                    Button(action: {
+                        deletePet(
+                            id: pet.id,
+                            callback: {
+                                onClose()
+                            }
+                        )
+                    }) {
+                        Text("Delete")
+                            .foregroundStyle(.red)
+                    }
+                } header: {
+                    Text("Actions")
                 }
 
             }
@@ -247,5 +273,5 @@ struct MyLostPetView: View {
 
 #Preview {
     @Previewable @State var pet = petInitiator
-    MyLostPetView(pet: $pet)
+    MyLostPetView(onClose: {}, pet: $pet)
 }

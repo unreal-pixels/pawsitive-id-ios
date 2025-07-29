@@ -62,7 +62,14 @@ struct LostPetView: View {
                 if isLoading {
                     LoadingView()
                 } else if myLostPet.id != "0" {
-                    MyLostPetView(pet: $myLostPet)
+                    MyLostPetView(
+                        onClose: {
+                            UserDefaults.standard.removeObject(forKey: "lostPetId")
+                            myLostPet = petInitiator
+                            startView()
+                        },
+                        pet: $myLostPet
+                    )
                 } else {
                     PetFormView(
                         onClose: { pet in
@@ -78,7 +85,11 @@ struct LostPetView: View {
                 }
             }.onAppear {
                 startView()
-            }.navigationTitle( isLoading ? "Lost Pet" : myLostPet.id != "0" ? "My Lost Pet" : "Report lost pet")
+            }.navigationTitle(
+                isLoading
+                    ? "Lost Pet"
+                    : myLostPet.id != "0" ? "My Lost Pet" : "Report lost pet"
+            )
         }
     }
 
