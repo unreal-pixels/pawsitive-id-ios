@@ -163,6 +163,7 @@ struct HomeView: View {
                     do {
                         reunitedPets = try await getReunitedPets()
                     } catch {
+                        isLoading = false
                         reunitedPets = []
                     }
                 }

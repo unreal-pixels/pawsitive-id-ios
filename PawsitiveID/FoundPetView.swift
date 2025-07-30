@@ -20,6 +20,7 @@ struct FoundPetView: View {
     @State private var openedPet: PetData = petInitiator
     @State private var showCreate = false
     @State private var filterView: FilterType = .All
+    @State private var errorHappened = false
 
     func removeOpenPet() {
         let index = pets.firstIndex(where: { pet in
@@ -32,6 +33,7 @@ struct FoundPetView: View {
     }
 
     func performAPICall() async throws -> [PetData] {
+        errorHappened = false
         isLoading = true
         let url = URL(
             string:
@@ -81,24 +83,35 @@ struct FoundPetView: View {
             .overlay(
                 Group {
                     if pets.filter({ filterPets($0) }).isEmpty {
-                        Text(
-                            "No\(filterView == .All ? "" : (filterView == .Lost ? " lost" : " found")) pets have been reported."
-                        )
-                        .italic()
+                        if (errorHappened) {
+                            Text("An error occurred")
+                                .italic()
+                        } else {
+                            Text(
+                                "No\(filterView == .All ? "" : (filterView == .Lost ? " lost" : " found")) pets have been reported."
+                            )
+                            .italic()
+                        }
                     }
                 }
             )
             .task {
                 do {
                     pets = try await performAPICall()
+                    errorHappened = false
                 } catch {
+                    isLoading = false
+                    errorHappened = true
                     pets = []
                 }
             }
             .refreshable {
                 do {
                     pets = try await performAPICall()
+                    errorHappened = false
                 } catch {
+                    isLoading = false
+                    errorHappened = true
                     pets = []
                 }
             }

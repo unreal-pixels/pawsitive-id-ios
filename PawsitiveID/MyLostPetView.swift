@@ -218,6 +218,7 @@ struct MyLostPetView: View {
                 do {
                     foundPets = try await getFoundPets()
                 } catch {
+                    isLoading = false
                     foundPets = []
                 }
             }
@@ -225,6 +226,7 @@ struct MyLostPetView: View {
                 do {
                     foundPets = try await getFoundPets()
                 } catch {
+                    isLoading = false
                     foundPets = []
                 }
             }
