@@ -68,28 +68,35 @@ struct FoundPetView: View {
                     spacing: 0
                 )
             Picker("Filter", selection: $filterView) {
-                Text("All").tag(FilterType.All)
-                Text("Lost").tag(FilterType.Lost)
-                Text("Found").tag(FilterType.Found)
+                Text("All").tag(FilterType.All).foregroundStyle(
+                    Color("TextSmall")
+                )
+                Text("Lost").tag(FilterType.Lost).foregroundStyle(
+                    Color("TextSmall")
+                )
+                Text("Found").tag(FilterType.Found).foregroundStyle(
+                    Color("TextSmall")
+                )
             }
             .pickerStyle(.segmented)
             .padding(10)
             List(pets.filter { filterPets($0) }) { pet in
                 Button(action: { viewPet(pet: pet) }) {
                     PetListCardView(pet: .constant(pet))
-                        .foregroundStyle(.black)
                 }
             }
             .overlay(
                 Group {
                     if pets.filter({ filterPets($0) }).isEmpty {
-                        if (errorHappened) {
+                        if errorHappened {
                             Text("An error occurred")
+                                .foregroundStyle(Color("TextSmall"))
                                 .italic()
                         } else {
                             Text(
                                 "No\(filterView == .All ? "" : (filterView == .Lost ? " lost" : " found")) pets have been reported."
                             )
+                            .foregroundStyle(Color("TextSmall"))
                             .italic()
                         }
                     }
@@ -146,6 +153,7 @@ struct FoundPetView: View {
                             Button("Close") {
                                 showingPet = false
                             }
+                            .foregroundStyle(Color("Link"))
                         }
                     }
                 }
@@ -155,6 +163,7 @@ struct FoundPetView: View {
                 Button("Report found pet") {
                     showCreate = true
                 }
+                .foregroundStyle(Color("Link"))
             }
         }
         .sheet(isPresented: $showCreate) {
@@ -175,10 +184,13 @@ struct FoundPetView: View {
                         Button("Close") {
                             showCreate = false
                         }
+                        .foregroundStyle(Color("Link"))
                     }
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color("Background"))
     }
 }
 

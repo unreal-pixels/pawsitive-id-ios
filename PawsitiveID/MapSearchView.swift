@@ -196,7 +196,8 @@ struct MapSearchView: View {
             ZStack(alignment: .topTrailing) {
                 TextField("Search locations", text: $searchField)
                     .padding()
-                    .background(.white)
+                    .background(Color("Field"))
+                    .foregroundStyle(Color("Text"))
                     .cornerRadius(30)
                     .onSubmit {
                         if !searchField.isEmpty {
@@ -216,7 +217,7 @@ struct MapSearchView: View {
                     Image(systemName: "magnifyingglass.circle.fill")
                         .resizable()
                         .frame(width: 38, height: 38)
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color("ActionPrimary"))
                         .padding(3)
                 }
                 .disabled(searchField.isEmpty)
@@ -231,6 +232,7 @@ struct MapSearchView: View {
                 presetLong: $presetLong
             )
         }
+        .background(Color("Background"))
     }
 }
 

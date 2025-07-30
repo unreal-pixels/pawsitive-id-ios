@@ -61,8 +61,11 @@ struct PetFormView: View {
             }
 
             if let placemarks = placemarks, let placemark = placemarks.first {
-                var list = [placemark.name ?? "", placemark.locality ?? "", placemark.administrativeArea ?? ""]
-                list = list.filter { return !$0.isEmpty}
+                var list = [
+                    placemark.name ?? "", placemark.locality ?? "",
+                    placemark.administrativeArea ?? "",
+                ]
+                list = list.filter { return !$0.isEmpty }
                 coordinateDisplayName = list.joined(separator: ", ")
             }
         }
@@ -77,7 +80,8 @@ struct PetFormView: View {
         let animalType = getPetApiName(type: petType)
 
         var data: [String: Any] = [
-            "name": petName.isEmpty ? "Found \(getPetType(type: animalType))" : petName,
+            "name": petName.isEmpty
+                ? "Found \(getPetType(type: animalType))" : petName,
             "post_type": type,
             "animal_type": animalType,
             "description": petDescription,
@@ -161,11 +165,16 @@ struct PetFormView: View {
         } else {
             HStack {
                 Form {
-                    Section(header: Text("Pet Info")) {
+                    Section(
+                        header: Text("Pet Info").foregroundStyle(
+                            Color("TextSmall")
+                        )
+                    ) {
                         TextField(
                             "Name\(type == "FOUND" ? " (optional)" : "")",
                             text: $petName
                         )
+                        .foregroundStyle(Color("Text"))
                         Picker("Pet type", selection: $petType) {
                             Text("Cat").tag(AnimalType.Cat)
                             Text("Dog").tag(AnimalType.Dog)
@@ -173,11 +182,13 @@ struct PetFormView: View {
                             Text("Bird").tag(AnimalType.Bird)
                             Text("Other").tag(AnimalType.Other)
                         }
+                        .foregroundStyle(Color("Text"))
                         TextField(
                             "Pet description",
                             text: $petDescription,
                             axis: .vertical
                         )
+                        .foregroundStyle(Color("Text"))
                         .lineLimit(3...)
 
                         DatePicker(
@@ -185,21 +196,26 @@ struct PetFormView: View {
                             selection: $lastSeen,
                             in: ...Date(),
                             displayedComponents: .date
-                        ).datePickerStyle(.compact)
+                        )
+                        .datePickerStyle(.compact)
+                        .foregroundStyle(Color("Text"))
                         Button(action: {
                             showLocationPicker = true
                         }) {
                             VStack(alignment: .leading) {
                                 Text("Select location")
-                                if (!coordinateDisplayName.isEmpty) {
+                                    .foregroundStyle(Color("Link"))
+                                if !coordinateDisplayName.isEmpty {
                                     Text(coordinateDisplayName)
                                         .padding([.top], 5)
                                         .font(.callout)
-                                        .foregroundStyle(.black)
-                                } else if lastSeenLat != nil && lastSeenLong != nil {
+                                        .foregroundStyle(Color("Text"))
+                                } else if lastSeenLat != nil
+                                    && lastSeenLong != nil
+                                {
                                     Text(
                                         "\(lastSeenLat ?? 1), \(lastSeenLong ?? 1)"
-                                    )
+                                    ).foregroundStyle(Color("Text"))
                                 }
                             }
                         }
@@ -207,7 +223,8 @@ struct PetFormView: View {
                             "Select photos",
                             selection: $selectedPhoto,
                             matching: .images
-                        ).onChange(of: selectedPhoto) { _, selectedPhoto in
+                        )
+                        .onChange(of: selectedPhoto) { _, selectedPhoto in
                             selectedPhoto.forEach { photo in
                                 Task {
                                     photoData.removeAll()
@@ -221,6 +238,7 @@ struct PetFormView: View {
                                 }
                             }
                         }
+                        .foregroundStyle(Color("Link"))
                         if !photoData.isEmpty {
                             ScrollView(.horizontal) {
                                 HStack {
@@ -240,27 +258,33 @@ struct PetFormView: View {
                     Section(
                         header: Text(
                             type == "FOUND" ? "Found by" : "Owner details"
-                        )
+                        ).foregroundStyle(Color("TextSmall"))
                     ) {
                         TextField("Name", text: $posterName)
+                            .foregroundStyle(Color("Text"))
                         TextField("Email Address", text: $email)
                             .textContentType(
                                 .emailAddress
                             ).keyboardType(.emailAddress).autocapitalization(
                                 .none
                             )
+                            .foregroundStyle(Color("Text"))
                         TextField("Phone Number", text: $phoneNumber)
                             .textContentType(.telephoneNumber).keyboardType(
                                 .phonePad
                             )
+                            .foregroundStyle(Color("Text"))
                     }
                     HStack {
                         Spacer()
                         Button(action: submitForm) {
                             Text("Submit")
-                        }.disabled(isDisabled())
+                        }
+                        .foregroundStyle(Color("TextOnColor"))
+                        .disabled(isDisabled())
                         Spacer()
                     }
+                    .listRowBackground(Color("ActionPrimary"))
                 }
             }
             .sheet(isPresented: $showLocationPicker) {
@@ -278,17 +302,20 @@ struct PetFormView: View {
                     }
                     .navigationBarTitle(
                         "Select a location",
-                        displayMode: .inline
+                        displayMode: .inline,
                     )
                     .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button("Close") {
                                 showLocationPicker = false
                             }
+                            .foregroundStyle(Color("Link"))
                         }
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color("Background"))
         }
     }
 }

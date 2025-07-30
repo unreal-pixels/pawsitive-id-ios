@@ -45,6 +45,7 @@ struct ContentView: View {
                 }
                 .tag(TabViews.Account)
         }
+        .tint(Color("Accent"))
     }
 }
 

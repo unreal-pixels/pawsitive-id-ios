@@ -31,7 +31,7 @@ struct HomeView: View {
         isLoading = false
         return wrapper.data
     }
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -51,12 +51,12 @@ struct HomeView: View {
                             Text("Reunite with your")
                                 .font(.system(size: 32))
                                 .fontWeight(.bold)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("TextOnColor"))
                                 .padding([.leading], 20)
                                 .shadow(radius: 10)
                             Text("furry friend")
                                 .font(.system(size: 42))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("TextOnColor"))
                                 .padding([.leading], 20)
                                 .padding([.bottom], 15)
                                 .fontWeight(.bold)
@@ -66,24 +66,29 @@ struct HomeView: View {
                                 Button(action: {
                                     changeTab(.LostPet)
                                 }) {
-                                    Text(UserDefaults.standard.string(forKey: "lostPetId") != nil ? "My lost pet" : "Report lost pet")
-                                        .foregroundColor(.white)
-                                        .font(.subheadline)
-                                        .padding()
-                                }.background(Color.orange)
+                                    Text(
+                                        UserDefaults.standard.string(
+                                            forKey: "lostPetId"
+                                        ) != nil
+                                            ? "My lost pet" : "Report lost pet"
+                                    )
+                                    .foregroundColor(Color("TextOnColor"))
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                    .padding()
+                                }.background(Color("ActionPrimary"))
                                     .clipShape(.buttonBorder)
                                 Spacer()
                                 Button(action: {
                                     changeTab(.Pets)
                                 }) {
                                     Text("Find a found pet")
-                                        .foregroundColor(.white)
+                                        .foregroundColor(Color("TextOnColor"))
                                         .font(.subheadline)
+                                        .fontWeight(.bold)
                                         .padding()
-                                }.background(
-                                    Color(red: 0.2, green: 0.2, blue: 0.2)
-                                )
-                                .clipShape(.buttonBorder)
+                                }.background(Color("ActionSecondary"))
+                                    .clipShape(.buttonBorder)
                                 Spacer()
                             }
                             .padding([.bottom], 15)
@@ -98,6 +103,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(reunitedPets.count == 0 ? "" : "Success stories")
                     .font(.system(size: 28))
+                    .foregroundStyle(Color("Accent"))
                     .fontWeight(.bold)
                     .padding([.bottom], 15)
                 ScrollView(.horizontal) {
@@ -135,7 +141,7 @@ struct HomeView: View {
                                 .lineLimit(1)
                                 .padding([.bottom], 3)
                                 .truncationMode(.tail)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("TextOnColor"))
                                 if reunitedPet.reunited_date != nil {
                                     Text(
                                         "Reunited on \(getFormattedDate(reunitedPet.reunited_date ?? ""))"
@@ -144,7 +150,7 @@ struct HomeView: View {
                                     .lineLimit(1)
                                     .truncationMode(.tail)
                                     .italic()
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Color("TextOnColor"))
                                 }
                             }
                             .frame(
@@ -154,7 +160,7 @@ struct HomeView: View {
                             )
                             .padding([.vertical], 5)
                             .padding([.horizontal], 15)
-                            .background(.gray.opacity(0.7))
+                            .background(Color("Accent").opacity(0.8))
                         }
                         .padding([.trailing], 10)
                     }
@@ -179,19 +185,21 @@ struct HomeView: View {
         .sheet(isPresented: $showingPet) { [openedPet] in
             NavigationStack {
                 PetReunitedDetailsView(pet: $openedPet)
-                .navigationBarTitle(
-                    openedPet.name,
-                    displayMode: .inline
-                )
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Close") {
-                            showingPet = false
+                    .navigationBarTitle(
+                        openedPet.name,
+                        displayMode: .inline
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Close") {
+                                showingPet = false
+                            }
+                            .foregroundStyle(Color("Link"))
                         }
                     }
-                }
             }
         }
+        .background(Color("Background"))
     }
 }
 

@@ -90,9 +90,9 @@ struct LostPetView: View {
                     ? "Lost Pet"
                     : myLostPet.id != "0" ? "My Lost Pet" : "Report lost pet"
             )
+            .background(Color("Background"))
         }
     }
-
 }
 
 #Preview {

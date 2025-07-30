@@ -52,9 +52,11 @@ struct PetReunitedDetailsView: View {
                         Text(pet.reunited_description ?? "")
                     }
                 } header: {
-                    Text("Reunited pet")
+                    Text("Reunited pet").foregroundStyle(Color("TextSmall"))
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color("Background"))
         }
     }
 }

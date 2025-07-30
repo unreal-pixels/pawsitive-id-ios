@@ -142,7 +142,7 @@ struct PetDetailsView: View {
                             value: getPetType(type: pet.animal_type)
                         )
                     } header: {
-                        Text("Animal info")
+                        Text("Animal info").foregroundStyle(Color("TextSmall"))
                     }
                     Section {
                         LabeledContent(
@@ -166,8 +166,9 @@ struct PetDetailsView: View {
                                 }
                             }
                         }
+                        .foregroundStyle(Color("Link"))
                     } header: {
-                        Text("Last seen")
+                        Text("Last seen").foregroundStyle(Color("TextSmall"))
                     }
                     Section {
                         LabeledContent("Name", value: pet.post_by_name)
@@ -191,6 +192,7 @@ struct PetDetailsView: View {
                                     Image(systemName: "envelope.fill")
                                 }
                             }
+                            .foregroundStyle(Color("Link"))
                         }
                         if pet.post_by_phone != nil && pet.post_by_phone != "" {
                             Button(action: {
@@ -219,9 +221,11 @@ struct PetDetailsView: View {
                                     Image(systemName: "phone.fill")
                                 }
                             }
+                            .foregroundStyle(Color("Link"))
                         }
                     } header: {
                         Text(foundMode() ? "Found by" : "Owner details")
+                            .foregroundStyle(Color("TextSmall"))
                     }
                     Section {
                         ForEach(pet.chats, id: \.self) { chat in
@@ -229,18 +233,20 @@ struct PetDetailsView: View {
                                 HStack(alignment: .top, spacing: 0) {
                                     Image(systemName: "person.circle.fill")
                                         .resizable()
-                                        .foregroundStyle(.gray)
+                                        .foregroundStyle(Color("Accent"))
                                         .frame(width: 40, height: 40)
                                         .padding([.trailing], 10)
                                     VStack(alignment: .leading, spacing: 0) {
                                         Text("Guest")
                                             .font(.headline)
+                                            .foregroundStyle(Color("Text"))
                                             .padding([.bottom], 5)
                                         Text(
                                             getFormattedDateTime(
                                                 chat.created_at
                                             )
                                         )
+                                        .foregroundStyle(Color("TextSmall"))
                                         .font(.caption)
                                         .italic()
                                     }
@@ -251,6 +257,7 @@ struct PetDetailsView: View {
                                     .padding([.bottom], 10)
                                 }
                                 Text(chat.message)
+                                    .foregroundStyle(Color("Text"))
                                     .font(.callout)
                             }
                         }
@@ -260,8 +267,9 @@ struct PetDetailsView: View {
                         }) {
                             Text("Post a comment")
                         }
+                        .foregroundStyle(Color("Link"))
                     } header: {
-                        Text("Comments")
+                        Text("Comments").foregroundStyle(Color("TextSmall"))
                     }
                     Section {
                         Button(action: {
@@ -274,14 +282,16 @@ struct PetDetailsView: View {
                         }) {
                             Text("Pet reunited")
                         }
+                        .foregroundStyle(Color("Link"))
                         Button(action: {
                             deleteConfirmation = true
                         }) {
                             Text("Delete")
                                 .foregroundStyle(.red)
                         }
+                        .foregroundStyle(Color("Danger"))
                     } header: {
-                        Text("Actions")
+                        Text("Actions").foregroundStyle(Color("TextSmall"))
                     }
                 }
             }
@@ -322,6 +332,7 @@ struct PetDetailsView: View {
                             Button("Close") {
                                 showingPetLocation = false
                             }
+                            .foregroundStyle(Color("Link"))
                         }
                     }
                 }
@@ -343,6 +354,8 @@ struct PetDetailsView: View {
             .onAppear {
                 getCoordinateName()
             }
+            .scrollContentBackground(.hidden)
+            .background(Color("Background"))
         }
     }
 }

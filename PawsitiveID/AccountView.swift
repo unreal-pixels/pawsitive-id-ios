@@ -21,44 +21,51 @@ struct AccountView: View {
                     .clipped()
                 VStack {
                     Circle()
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(Color("Accent"))
                         .frame(width: 140, height: 140)
                         .overlay {
                             Image(systemName: "pawprint.fill")
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 80, height: 80)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Color("TextOnColor"))
                         }
                         .padding([.bottom], 20)
                     Text("Guest User")
                         .font(.title)
                         .fontWeight(.bold)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color("TextOnColor"))
                         .shadow(radius: 10)
                     Text("Not logged in")
                         .font(.callout)
                         .fontWeight(.semibold)
                         .italic()
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color("TextOnColor"))
                         .shadow(radius: 10)
                 }
                 .padding([.top], 100)
             }
             .frame(height: 350)
             List {
-                Section(header: Text("User account")) {
+                Section(
+                    header: Text("User account").foregroundStyle(
+                        Color("TextSmall")
+                    )
+                ) {
                     Button(action: {}) {
                         Text("Log in")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color("Link"))
                     }
                     Button(action: {}) {
                         Text("Create account")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color("Link"))
                     }
                 }
-                Section(header: Text("System")) {
+                Section(
+                    header: Text("System").foregroundStyle(Color("TextSmall"))
+                ) {
                     LabeledContent("Version", value: appVersion ?? "?")
+                        .foregroundStyle(Color("Text"))
                     Button(action: {
                         let url = URL(
                             string:
@@ -71,7 +78,7 @@ struct AccountView: View {
                             Spacer()
                             Image(systemName: "safari.fill")
                         }
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Color("Link"))
                     }
                     Button(action: {
                         let url = URL(string: "https://www.pawsitiveid.com")
@@ -82,18 +89,20 @@ struct AccountView: View {
                             Spacer()
                             Image(systemName: "safari.fill")
                         }
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Color("Link"))
                     }
                     Button(action: {
                         UserDefaults.standard.removeObject(forKey: "lostPetId")
                     }) {
                         Text("Reset app")
-                            .foregroundStyle(.red)
+                            .foregroundStyle(Color("Danger"))
                     }
                 }
             }
             .padding([.top], 30)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color("Background"))
         .ignoresSafeArea()
     }
 }

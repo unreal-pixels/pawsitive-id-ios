@@ -136,22 +136,27 @@ struct MyLostPetView: View {
                 }
                 VStack(alignment: .leading) {
                     Text(pet.name).fontWeight(.bold)
+                        .foregroundStyle(Color("Text"))
                         .multilineTextAlignment(.leading)
                         .lineLimit(1)
                         .padding([.top], 5)
-                    Text(getFormattedDate(pet.last_seen_date)).font(.caption)
+                    Text(getFormattedDate(pet.last_seen_date))
+                        .font(.caption)
+                        .foregroundStyle(Color("Text"))
                         .italic()
                         .multilineTextAlignment(.leading)
                         .lineLimit(1)
                     Spacer()
                     Text(pet.description)
                         .font(.caption)
+                        .foregroundStyle(Color("TextSmall"))
                         .fixedSize(horizontal: false, vertical: true)
                         .lineLimit(2)
                         .truncationMode(.tail)
                     Spacer()
-                }.frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(10)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
             }
             .frame(height: 100)
             .padding([.leading], 20)
@@ -161,7 +166,7 @@ struct MyLostPetView: View {
                 Section(
                     header: Text(
                         shelterData.isEmpty ? "" : "Nearby Animal Shelters"
-                    )
+                    ).foregroundStyle(Color("TextSmall"))
                 ) {
                     ForEach(shelterData, id: \.self) { data in
                         Button(action: {
@@ -171,10 +176,11 @@ struct MyLostPetView: View {
                             UIApplication.shared.open(url)
                         }) {
                             HStack {
-                                Text(data.name).foregroundStyle(.black)
+                                Text(data.name)
+                                    .foregroundStyle(Color("Text"))
                                 Spacer()
                                 Image(systemName: "phone.fill")
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(Color("Link"))
                                     .padding([.leading])
                             }
                         }
@@ -183,11 +189,11 @@ struct MyLostPetView: View {
                 }
                 Section(
                     header: Text(foundPets.isEmpty ? "" : "Recently found pets")
+                        .foregroundStyle(Color("TextSmall"))
                 ) {
                     ForEach(foundPets, id: \.self) { foundPet in
                         Button(action: { viewPet(foundPet: foundPet) }) {
                             PetListCardView(pet: .constant(foundPet))
-                                .foregroundStyle(.black)
                         }
                     }
                 }
@@ -201,16 +207,16 @@ struct MyLostPetView: View {
                         )
                     }) {
                         Text("Pet reunited")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color("Link"))
                     }
                     Button(action: {
                         deleteConfirmation = true
                     }) {
                         Text("Delete")
-                            .foregroundStyle(.red)
+                            .foregroundStyle(Color("Danger"))
                     }
                 } header: {
-                    Text("Actions")
+                    Text("Actions").foregroundStyle(Color("TextSmall"))
                 }
 
             }
@@ -262,6 +268,7 @@ struct MyLostPetView: View {
                         Button("Close") {
                             showingPet = false
                         }
+                        .foregroundStyle(Color("Link"))
                     }
                 }
             }
@@ -282,6 +289,8 @@ struct MyLostPetView: View {
         } message: {
             Text("Are you sure you want to delete this post?")
         }
+        .scrollContentBackground(.hidden)
+        .background(Color("Background"))
     }
 }
 
