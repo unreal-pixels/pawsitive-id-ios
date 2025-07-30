@@ -26,6 +26,7 @@ struct PetFormView: View {
     @State private var photoData: [Data] = []
     @State private var showLocationPicker = false
     @State private var coordinateDisplayName = ""
+    @State private var showPhotoPicker = false
 
     func isDisabled() -> Bool {
         if !email.isEmpty && !isValidEmail(email) {
@@ -203,8 +204,6 @@ struct PetFormView: View {
                             showLocationPicker = true
                         }) {
                             VStack(alignment: .leading) {
-                                Text("Select location")
-                                    .foregroundStyle(Color("Link"))
                                 if !coordinateDisplayName.isEmpty {
                                     Text(coordinateDisplayName)
                                         .padding([.top], 5)
@@ -216,41 +215,54 @@ struct PetFormView: View {
                                     Text(
                                         "\(lastSeenLat ?? 1), \(lastSeenLong ?? 1)"
                                     ).foregroundStyle(Color("Text"))
+                                } else {
+                                    Text("Select location")
+                                        .foregroundStyle(Color("Link"))
                                 }
                             }
                         }
-                        PhotosPicker(
-                            "Select photos",
-                            selection: $selectedPhoto,
-                            matching: .images
-                        )
-                        .onChange(of: selectedPhoto) { _, selectedPhoto in
-                            selectedPhoto.forEach { photo in
-                                Task {
-                                    photoData.removeAll()
-
-                                    if let data =
-                                        try? await photo
-                                        .loadTransferable(type: Data.self)
-                                    {
-                                        photoData.append(data)
-                                    }
-                                }
-                            }
-                        }
-                        .foregroundStyle(Color("Link"))
-                        if !photoData.isEmpty {
-                            ScrollView(.horizontal) {
-                                HStack {
-                                    ForEach(photoData, id: \.self) { photo in
-                                        Image(uiImage: UIImage(data: photo)!)
+                        Button(action: {
+                            showPhotoPicker = true
+                        }) {
+                            if !photoData.isEmpty {
+                                ScrollView(.horizontal) {
+                                    HStack {
+                                        ForEach(photoData, id: \.self) {
+                                            photo in
+                                            Image(
+                                                uiImage: UIImage(data: photo)!
+                                            )
                                             .resizable()
                                             .scaledToFill()
                                             .frame(width: 150, height: 150)
                                             .clipped()
                                             .padding([.leading, .trailing], 10)
+                                        }
                                     }
+                                    .onTapGesture(perform: {
+                                        showPhotoPicker = true
+                                    })
                                 }
+
+                            } else {
+                                Rectangle()
+                                    .frame(width: 150, height: 150)
+                                    .foregroundStyle(Color("Background"))
+                                    .overlay {
+                                        VStack {
+                                            Image(systemName: "photo.fill")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(height: 50)
+                                                .foregroundStyle(
+                                                    Color("Accent")
+                                                )
+                                                .padding([.bottom], 5)
+                                            Text("Add photos")
+                                                .font(.callout)
+                                                .foregroundStyle(Color("Text"))
+                                        }
+                                    }
                             }
                         }
                     }
@@ -285,6 +297,25 @@ struct PetFormView: View {
                         Spacer()
                     }
                     .listRowBackground(Color("ActionPrimary"))
+                }
+            }
+            .photosPicker(
+                isPresented: $showPhotoPicker,
+                selection: $selectedPhoto,
+                maxSelectionCount: 4,
+                matching: .images
+            ).onChange(of: selectedPhoto) { _, selectedPhoto in
+                selectedPhoto.forEach { photo in
+                    Task {
+                        photoData.removeAll()
+
+                        if let data =
+                            try? await photo
+                            .loadTransferable(type: Data.self)
+                        {
+                            photoData.append(data)
+                        }
+                    }
                 }
             }
             .sheet(isPresented: $showLocationPicker) {
