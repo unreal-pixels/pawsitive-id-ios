@@ -78,6 +78,16 @@ struct FoundPetView: View {
                         .foregroundStyle(.black)
                 }
             }
+            .overlay(
+                Group {
+                    if pets.filter({ filterPets($0) }).isEmpty {
+                        Text(
+                            "No\(filterView == .All ? "" : (filterView == .Lost ? " lost" : " found")) pets have been reported."
+                        )
+                        .italic()
+                    }
+                }
+            )
             .task {
                 do {
                     pets = try await performAPICall()

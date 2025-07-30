@@ -14,6 +14,7 @@ struct PetDetailsView: View {
     @State private var isLoading = false
     @State private var showingPetLocation = false
     @State private var showCommentCreate = false
+    @State private var deleteConfirmation = false
     @State private var newComment = ""
     @State private var coordinateDisplayName = ""
 
@@ -274,12 +275,7 @@ struct PetDetailsView: View {
                             Text("Pet reunited")
                         }
                         Button(action: {
-                            deletePet(
-                                id: pet.id,
-                                callback: {
-                                    onClose("DELETE")
-                                }
-                            )
+                            deleteConfirmation = true
                         }) {
                             Text("Delete")
                                 .foregroundStyle(.red)
@@ -288,6 +284,22 @@ struct PetDetailsView: View {
                         Text("Actions")
                     }
                 }
+            }
+            .confirmationDialog("Delete?", isPresented: $deleteConfirmation) {
+                Button("Yes", role: .destructive) {
+                    deleteConfirmation = false
+                    deletePet(
+                        id: pet.id,
+                        callback: {
+                            onClose("DELETE")
+                        }
+                    )
+                }
+                Button("No", role: .cancel) {
+                    deleteConfirmation = false
+                }
+            } message: {
+                Text("Are you sure you want to delete this post?")
             }
             .sheet(isPresented: $showingPetLocation) {
                 NavigationStack {

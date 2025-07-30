@@ -19,6 +19,7 @@ struct MyLostPetView: View {
     @State var isLoading = true
     @State var foundPets: [PetData] = []
     @State var showingPet = false
+    @State var deleteConfirmation = false
     @State var openedPet: PetData = petInitiator
     @State private var shelterData: [ShelterInfo] = []
 
@@ -203,12 +204,7 @@ struct MyLostPetView: View {
                             .foregroundStyle(.blue)
                     }
                     Button(action: {
-                        deletePet(
-                            id: pet.id,
-                            callback: {
-                                onClose()
-                            }
-                        )
+                        deleteConfirmation = true
                     }) {
                         Text("Delete")
                             .foregroundStyle(.red)
@@ -267,6 +263,22 @@ struct MyLostPetView: View {
                     }
                 }
             }
+        }
+        .confirmationDialog("Delete?", isPresented: $deleteConfirmation) {
+            Button("Yes", role: .destructive) {
+                deleteConfirmation = false
+                deletePet(
+                    id: pet.id,
+                    callback: {
+                        onClose()
+                    }
+                )
+            }
+            Button("No", role: .cancel) {
+                deleteConfirmation = false
+            }
+        } message: {
+            Text("Are you sure you want to delete this post?")
         }
     }
 }
