@@ -73,10 +73,9 @@ struct AccountView: View {
                     }
                 }
             }
-            .padding([.vertical], 20)
-            Spacer()
+            .padding([.top], 30)
         }
-        .padding([.top], 40)
+        .padding([.top], 30)
     }
 }
 

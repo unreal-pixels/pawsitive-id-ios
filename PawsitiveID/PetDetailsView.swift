@@ -5,6 +5,7 @@
 //  Created by David Bradshaw on 7/24/25.
 //
 
+import CoreLocation
 import SwiftUI
 
 struct PetDetailsView: View {
@@ -14,9 +15,39 @@ struct PetDetailsView: View {
     @State private var showingPetLocation = false
     @State private var showCommentCreate = false
     @State private var newComment = ""
+    @State private var coordinateDisplayName = ""
 
     private func foundMode() -> Bool {
         return pet.post_type == "FOUND"
+    }
+
+    func getCoordinateName() {
+        coordinateDisplayName = ""
+
+        let geocoder = CLGeocoder()
+        let location = CLLocation(
+            latitude: Double(pet.last_seen_lat) ?? 0,
+            longitude: Double(pet.last_seen_long) ?? 0
+        )
+
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            if let error = error {
+                logIssue(
+                    message: "Unable to get name from coordinates for details",
+                    data: error
+                )
+                return
+            }
+
+            if let placemarks = placemarks, let placemark = placemarks.first {
+                var list = [
+                    placemark.name ?? "", placemark.locality ?? "",
+                    placemark.administrativeArea ?? "",
+                ]
+                list = list.filter { return !$0.isEmpty }
+                coordinateDisplayName = list.joined(separator: ", ")
+            }
+        }
     }
 
     private func saveComment() {
@@ -120,10 +151,18 @@ struct PetDetailsView: View {
                         Button(action: {
                             showingPetLocation = true
                         }) {
-                            HStack {
-                                Text("View location")
-                                Spacer()
-                                Image(systemName: "map.fill")
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    Text("View location")
+                                    Spacer()
+                                    Image(systemName: "map.fill")
+                                }
+                                if !coordinateDisplayName.isEmpty {
+                                    Text(coordinateDisplayName)
+                                        .padding([.top], 5)
+                                        .font(.callout)
+                                        .foregroundStyle(.black)
+                                }
                             }
                         }
                     } header: {
@@ -154,11 +193,20 @@ struct PetDetailsView: View {
                         }
                         if pet.post_by_phone != nil && pet.post_by_phone != "" {
                             Button(action: {
-                                var phone = pet.post_by_phone ?? "";
-                                phone = phone.replacingOccurrences(of: "-", with: "")
-                                phone = phone.replacingOccurrences(of: "(", with: "")
-                                phone = phone.replacingOccurrences(of: ")", with: "")
-                                
+                                var phone = pet.post_by_phone ?? ""
+                                phone = phone.replacingOccurrences(
+                                    of: "-",
+                                    with: ""
+                                )
+                                phone = phone.replacingOccurrences(
+                                    of: "(",
+                                    with: ""
+                                )
+                                phone = phone.replacingOccurrences(
+                                    of: ")",
+                                    with: ""
+                                )
+
                                 let url = URL(
                                     string: "tel://\(phone)"
                                 )!
@@ -187,11 +235,18 @@ struct PetDetailsView: View {
                                         Text("Guest")
                                             .font(.headline)
                                             .padding([.bottom], 5)
-                                        Text(getFormattedDateTime(chat.created_at))
-                                            .font(.caption)
-                                            .italic()
+                                        Text(
+                                            getFormattedDateTime(
+                                                chat.created_at
+                                            )
+                                        )
+                                        .font(.caption)
+                                        .italic()
                                     }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .frame(
+                                        maxWidth: .infinity,
+                                        alignment: .leading
+                                    )
                                     .padding([.bottom], 10)
                                 }
                                 Text(chat.message)
@@ -209,16 +264,22 @@ struct PetDetailsView: View {
                     }
                     Section {
                         Button(action: {
-                            markReunitedPet(id: pet.id, callback: {
-                                onClose("DELETE")
-                            })
+                            markReunitedPet(
+                                id: pet.id,
+                                callback: {
+                                    onClose("DELETE")
+                                }
+                            )
                         }) {
                             Text("Pet reunited")
                         }
                         Button(action: {
-                            deletePet(id: pet.id, callback: {
-                                onClose("DELETE")
-                            })
+                            deletePet(
+                                id: pet.id,
+                                callback: {
+                                    onClose("DELETE")
+                                }
+                            )
                         }) {
                             Text("Delete")
                                 .foregroundStyle(.red)
@@ -235,7 +296,9 @@ struct PetDetailsView: View {
                             type: $pet.animal_type,
                             lat: $pet.last_seen_lat,
                             long: $pet.last_seen_long,
-                            imageUrl: .constant(pet.images.first ?? genericImage)
+                            imageUrl: .constant(
+                                pet.images.first ?? genericImage
+                            )
                         )
                     }
                     .navigationBarTitle(
@@ -264,6 +327,9 @@ struct PetDetailsView: View {
                 TextField("Comment", text: $newComment)
             } message: {
                 Text("Include any useful info to help get \(pet.name) home!")
+            }
+            .onAppear {
+                getCoordinateName()
             }
         }
     }

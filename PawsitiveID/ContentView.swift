@@ -11,10 +11,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             Tab("Home", systemImage: "house.fill") {
-                NavigationView {
-                    HomeView()
-                        .navigationTitle("Home")
-                }
+                HomeView()
             }
             Tab("Lost pet", systemImage: "sparkle.magnifyingglass") {
                 LostPetView()
@@ -26,10 +23,7 @@ struct ContentView: View {
                 }
             }
             Tab("Account", systemImage: "person.fill") {
-                NavigationView {
-                    AccountView()
-                        .navigationTitle("Account")
-                }
+                AccountView()
             }
         }
     }

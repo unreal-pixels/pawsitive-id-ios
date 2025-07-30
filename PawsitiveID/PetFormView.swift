@@ -66,7 +66,6 @@ struct PetFormView: View {
                 coordinateDisplayName = list.joined(separator: ", ")
             }
         }
-
     }
 
     func submitForm() {

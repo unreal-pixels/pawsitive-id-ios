@@ -12,6 +12,8 @@ struct HomeView: View {
     @State var showingPet = false
     @State var openedPet: PetData = petInitiator
     @State var isLoading = true
+    @State var imageIndex = 0
+
     func viewPet(pet: PetData) {
         openedPet = pet
         showingPet = true
@@ -29,31 +31,36 @@ struct HomeView: View {
         return wrapper.data
     }
     var body: some View {
-//        randomize pictures on load
         VStack {
             HStack {
-                Image("WelcomeBanner0")
+                Image("WelcomeBanner\(imageIndex)")
                     .resizable()
-                    .frame(
-                        width: .infinity,
-                        height: 300,
-                    ).aspectRatio(contentMode: .fit)
+                    .scaledToFill()
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
+                    .containerRelativeFrame(
+                        .vertical,
+                        count: 100,
+                        span: 60,
+                        spacing: 0
+                    )
                     .clipped()
                     .overlay(alignment: .bottom) {
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 0) {
                             Text("Reunite with your")
-                                .font(.title3)
+                                .font(.system(size: 32))
                                 .fontWeight(.bold)
                                 .foregroundStyle(.white)
-                                .padding([.leading], 10)
+                                .padding([.leading], 20)
                                 .shadow(radius: 10)
                             Text("furry friend")
-                                .font(.title)
+                                .font(.system(size: 42))
                                 .foregroundStyle(.white)
-                                .padding([.leading], 10)
+                                .padding([.leading], 20)
+                                .padding([.bottom], 15)
                                 .fontWeight(.bold)
                                 .shadow(radius: 10)
                             HStack {
+                                Spacer()
                                 Button(action: {}) {
                                     Text("Report a lost pet")
                                         .foregroundColor(.white)
@@ -61,7 +68,7 @@ struct HomeView: View {
                                         .padding()
                                 }.background(Color.orange)
                                     .clipShape(.buttonBorder)
-
+                                Spacer()
                                 Button(action: {}) {
                                     Text("Find a found pet")
                                         .foregroundColor(.white)
@@ -71,36 +78,100 @@ struct HomeView: View {
                                     Color(red: 0.2, green: 0.2, blue: 0.2)
                                 )
                                 .clipShape(.buttonBorder)
-                            }.padding([.horizontal, .bottom], 10)
-
+                                Spacer()
+                            }
+                            .padding([.bottom], 15)
                         }
+                        .frame(
+                            minWidth: 0,
+                            maxWidth: .infinity,
+                            alignment: .topLeading
+                        )
                     }
-            }.padding([.horizontal], 10)
-            List {
-                Section(
-                    header: Text(
-                        reunitedPets.isEmpty ? "" : "Reunited Pets"
-                    )
-                ) {
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                Text(reunitedPets.count == 0 ? "" : "Recently reunited")
+                    .font(.system(size: 32))
+                    .fontWeight(.bold)
+                    .padding([.bottom], 15)
+                ScrollView(.horizontal) {
                     ForEach(reunitedPets, id: \.self) { reunitedPet in
-                        Button(action: { viewPet(pet: reunitedPet) }) {
-                            PetListCardView(pet: .constant(reunitedPet))
-                                .foregroundStyle(.black)
+                        ZStack(alignment: .bottom) {
+                            Button(action: { viewPet(pet: reunitedPet) }) {
+                                AsyncImage(
+                                    url: URL(
+                                        string: reunitedPet.reunited_images
+                                            .first ?? genericImage
+                                    )
+                                ) { result in
+                                    result.image?
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(
+                                            width: 200,
+                                            height: 200,
+                                            alignment: .center
+                                        )
+                                        .clipped()
+                                }
+                                .frame(
+                                    width: 200,
+                                    height: 200,
+                                    alignment: .center
+                                )
+                            }
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(
+                                    !reunitedPet.name.isEmpty
+                                        ? reunitedPet.name : "Reunited pet"
+                                )
+                                .fontWeight(.bold)
+                                .lineLimit(1)
+                                .padding([.bottom], 3)
+                                .truncationMode(.tail)
+                                .foregroundStyle(.white)
+                                if reunitedPet.reunited_date != nil {
+                                    Text(
+                                        "Reunited on \(getFormattedDate(reunitedPet.reunited_date ?? ""))"
+                                    )
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .italic()
+                                    .foregroundStyle(.white)
+                                }
+                            }
+                            .frame(
+                                minWidth: 0,
+                                maxWidth: 170,
+                                alignment: .leading
+                            )
+                            .padding([.vertical], 5)
+                            .padding([.horizontal], 15)
+                            .background(.gray.opacity(0.7))
                         }
+                        .padding([.trailing], 10)
                     }
                 }
-            }.task {
-                do {
-                    reunitedPets = try await getReunitedPets()
-                } catch {
-                    reunitedPets = []
+                .task {
+                    do {
+                        reunitedPets = try await getReunitedPets()
+                    } catch {
+                        reunitedPets = []
+                    }
                 }
             }
+            .padding(10)
+            .frame(minWidth: 0, maxWidth: .infinity, alignment: .topLeading)
+            Spacer()
         }
+        .onAppear {
+            imageIndex = Int.random(in: 0...5)
+        }
+        .ignoresSafeArea()
     }
 }
 
 #Preview {
-    @Previewable @State var pet = petInitiator
-    HomeView(reunitedPets: [pet])
+    HomeView()
 }
