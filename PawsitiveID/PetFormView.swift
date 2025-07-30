@@ -95,18 +95,8 @@ struct PetFormView: View {
         ]
 
         photoData.forEach { photo in
-            let width: CGFloat = 512
-            let uiImage = UIImage(data: photo)!
-            let scale = width / uiImage.size.width
-            let newHeight = uiImage.size.height * scale
-            UIGraphicsBeginImageContext(CGSizeMake(width, newHeight))
-            uiImage.draw(in: CGRectMake(0, 0, width, newHeight))
-            let newImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-
             photoStrings.append(
-                "data:image/png;base64,"
-                    + (newImage?.pngData()?.base64EncodedString() ?? "")
+                resizeImage(photo: photo) ?? ""
             )
         }
 

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import PhotosUI
 
 func isValidEmail(_ email: String) -> Bool {
     let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
@@ -148,4 +149,21 @@ func markReunitedPet(id: String, callback: @escaping () -> Void) {
     } catch {
         logIssue(message: "Failed to PUT pet", data: error)
     }
+}
+
+func resizeImage(photo: Data?) -> String? {
+    if photo == nil {
+        return nil
+    }
+
+    let width: CGFloat = 512
+    let uiImage = UIImage(data: photo!)!
+    let scale = width / uiImage.size.width
+    let newHeight = uiImage.size.height * scale
+    UIGraphicsBeginImageContext(CGSizeMake(width, newHeight))
+    uiImage.draw(in: CGRectMake(0, 0, width, newHeight))
+    let newImage = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    return "data:image/png;base64,"
+        + (newImage?.pngData()?.base64EncodedString() ?? "")
 }
