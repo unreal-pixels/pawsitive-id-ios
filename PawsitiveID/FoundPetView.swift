@@ -19,7 +19,7 @@ struct FoundPetView: View {
     @State private var showingPet = false
     @State private var openedPet: PetData = petInitiator
     @State private var showCreate = false
-    @State private var filterView: FilterType = .Lost
+    @State private var filterView: FilterType = .All
 
     func removeOpenPet() {
         let index = pets.firstIndex(where: { pet in
@@ -66,9 +66,9 @@ struct FoundPetView: View {
                     spacing: 0
                 )
             Picker("Filter", selection: $filterView) {
+                Text("All").tag(FilterType.All)
                 Text("Lost").tag(FilterType.Lost)
                 Text("Found").tag(FilterType.Found)
-                Text("All").tag(FilterType.All)
             }
             .pickerStyle(.segmented)
             .padding(10)

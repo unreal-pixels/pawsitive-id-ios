@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    let changeTab: (_ tab: TabViews) -> Void
     @State var reunitedPets: [PetData] = []
     @State var showingPet = false
     @State var openedPet: PetData = petInitiator
@@ -30,6 +31,7 @@ struct HomeView: View {
         isLoading = false
         return wrapper.data
     }
+    
     var body: some View {
         VStack {
             HStack {
@@ -61,15 +63,19 @@ struct HomeView: View {
                                 .shadow(radius: 10)
                             HStack {
                                 Spacer()
-                                Button(action: {}) {
-                                    Text("Report a lost pet")
+                                Button(action: {
+                                    changeTab(.LostPet)
+                                }) {
+                                    Text(UserDefaults.standard.string(forKey: "lostPetId") != nil ? "My lost pet" : "Report lost pet")
                                         .foregroundColor(.white)
                                         .font(.subheadline)
                                         .padding()
                                 }.background(Color.orange)
                                     .clipShape(.buttonBorder)
                                 Spacer()
-                                Button(action: {}) {
+                                Button(action: {
+                                    changeTab(.Pets)
+                                }) {
                                     Text("Find a found pet")
                                         .foregroundColor(.white)
                                         .font(.subheadline)
@@ -90,8 +96,8 @@ struct HomeView: View {
                     }
             }
             VStack(alignment: .leading, spacing: 0) {
-                Text(reunitedPets.count == 0 ? "" : "Recently reunited")
-                    .font(.system(size: 32))
+                Text(reunitedPets.count == 0 ? "" : "Success stories")
+                    .font(.system(size: 28))
                     .fontWeight(.bold)
                     .padding([.bottom], 15)
                 ScrollView(.horizontal) {
@@ -169,9 +175,25 @@ struct HomeView: View {
             imageIndex = Int.random(in: 0...5)
         }
         .ignoresSafeArea()
+        .sheet(isPresented: $showingPet) { [openedPet] in
+            NavigationStack {
+                PetReunitedDetailsView(pet: $openedPet)
+                .navigationBarTitle(
+                    openedPet.name,
+                    displayMode: .inline
+                )
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Close") {
+                            showingPet = false
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(changeTab: { tab in })
 }

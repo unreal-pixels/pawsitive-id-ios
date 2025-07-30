@@ -13,20 +13,39 @@ struct AccountView: View {
             Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
 
         VStack {
-            Image(systemName: "person.circle.fill")
-                .resizable()
-                .scaledToFill()
-                .frame(width: 140, height: 140)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(.black, lineWidth: 2))
-                .foregroundStyle(.gray)
-                .padding([.bottom], 20)
-            Text("Guest User")
-                .font(.title)
-                .fontWeight(.bold)
-            Text("Not logged in")
-                .font(.subheadline)
-                .italic()
+            ZStack {
+                Image("AccountBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 425, alignment: .center)
+                    .clipped()
+                VStack {
+                    Circle()
+                        .foregroundStyle(.gray)
+                        .frame(width: 140, height: 140)
+                        .overlay {
+                            Image(systemName: "pawprint.fill")
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 80, height: 80)
+                                .foregroundStyle(.white)
+                        }
+                        .padding([.bottom], 20)
+                    Text("Guest User")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+                        .shadow(radius: 10)
+                    Text("Not logged in")
+                        .font(.callout)
+                        .fontWeight(.semibold)
+                        .italic()
+                        .foregroundStyle(.white)
+                        .shadow(radius: 10)
+                }
+                .padding([.top], 100)
+            }
+            .frame(height: 350)
             List {
                 Section(header: Text("User account")) {
                     Button(action: {}) {
@@ -75,7 +94,7 @@ struct AccountView: View {
             }
             .padding([.top], 30)
         }
-        .padding([.top], 30)
+        .ignoresSafeArea()
     }
 }
 

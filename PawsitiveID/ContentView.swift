@@ -7,24 +7,43 @@
 
 import SwiftUI
 
+enum TabViews {
+    case Home
+    case LostPet
+    case Pets
+    case Account
+}
+
 struct ContentView: View {
+    @State private var tabSelection: TabViews = .Home
+
     var body: some View {
-        TabView {
-            Tab("Home", systemImage: "house.fill") {
-                HomeView()
+        TabView(selection: $tabSelection) {
+            HomeView(changeTab: { tab in
+                tabSelection = tab
+            })
+            .tabItem {
+                Label("Home", systemImage: "house.fill")
             }
-            Tab("Lost pet", systemImage: "sparkle.magnifyingglass") {
-                LostPetView()
-            }
-            Tab("Pets", systemImage: "pawprint.fill") {
-                NavigationView {
-                    FoundPetView()
-                        .navigationTitle("Pets")
+            .tag(TabViews.Home)
+            LostPetView()
+                .tabItem {
+                    Label("Lost pet", systemImage: "sparkle.magnifyingglass")
                 }
+                .tag(TabViews.LostPet)
+            NavigationView {
+                FoundPetView()
+                    .navigationTitle("Pets")
             }
-            Tab("Account", systemImage: "person.fill") {
-                AccountView()
+            .tabItem {
+                Label("Pets", systemImage: "pawprint.fill")
             }
+            .tag(TabViews.Pets)
+            AccountView()
+                .tabItem {
+                    Label("Account", systemImage: "person.fill")
+                }
+                .tag(TabViews.Account)
         }
     }
 }

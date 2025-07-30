@@ -90,7 +90,7 @@ class MapSearch: UIViewController, GMSMapViewDelegate {
                     latitude: presetLat!,
                     longitude: presetLong!
                 )
-                
+
                 mapView.clear()
                 let marker = GMSMarker(position: coordinate!)
                 marker.map = mapView
