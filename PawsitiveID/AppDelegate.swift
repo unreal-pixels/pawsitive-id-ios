@@ -16,7 +16,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication
             .LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        GMSServices.provideAPIKey("AIzaSyDvHLQdf3mF6BevWkrnrYAFKUHWPpFDKnc")
+        GMSServices.provideAPIKey("GOOGLE_MAPS_API_KEY")
 
         return true
     }
