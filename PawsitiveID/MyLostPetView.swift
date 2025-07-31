@@ -20,6 +20,8 @@ struct MyLostPetView: View {
     @State var foundPets: [PetData] = []
     @State var showingPet = false
     @State var deleteConfirmation = false
+    @State var showCommentCreate = false
+    @State var newComment = ""
     @State var showingReunitedAction = false
     @State var openedPet: PetData = petInitiator
     @State private var shelterData: [ShelterInfo] = []
@@ -98,6 +100,63 @@ struct MyLostPetView: View {
                     break
                 }
             }
+        }
+    }
+    
+    private func saveComment() {
+        showCommentCreate = false
+        isLoading = true
+
+        let data: [String: Any] = [
+            "message": newComment,
+            "type": pet.post_type,
+            "post_id": Int(pet.id) ?? 0,
+        ]
+
+        do {
+            let payload = try JSONSerialization.data(
+                withJSONObject: data,
+                options: []
+            )
+
+            let url = URL(
+                string: "https://unrealpixels.app/api/pawsitive-id/chat.php"
+            )!
+            var request = URLRequest(url: url)
+            request.setValue(
+                "application/json; charset=utf-8",
+                forHTTPHeaderField: "Content-Type"
+            )
+            request.httpMethod = "POST"
+            request.httpBody = payload
+            let session = URLSession.shared.dataTask(with: request) {
+                data,
+                response,
+                error in
+                if error != nil || data == nil {
+                    logIssue(message: "Failed to POST pet chat", data: error)
+                    isLoading = false
+                    return
+                }
+
+                do {
+                    let chatData = try JSONDecoder().decode(
+                        ChatItemApiSingle.self,
+                        from: data!
+                    )
+
+                    pet.chats.insert(chatData.data, at: 0)
+                    isLoading = false
+                } catch {
+                    logIssue(message: "Failed to decode pet chat", data: error)
+                    isLoading = false
+                }
+            }
+            session.resume()
+
+        } catch {
+            logIssue(message: "Failed to submit pet chat", data: error)
+            isLoading = false
         }
     }
 
@@ -188,6 +247,50 @@ struct MyLostPetView: View {
 
                     }
                 }
+                Section {
+                    ForEach(pet.chats, id: \.self) { chat in
+                        VStack(alignment: .leading, spacing: 0) {
+                            HStack(alignment: .top, spacing: 0) {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .foregroundStyle(Color("Accent"))
+                                    .frame(width: 40, height: 40)
+                                    .padding([.trailing], 10)
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text("Guest")
+                                        .font(.headline)
+                                        .foregroundStyle(Color("Text"))
+                                        .padding([.bottom], 5)
+                                    Text(
+                                        getFormattedDateTime(
+                                            chat.created_at
+                                        )
+                                    )
+                                    .foregroundStyle(Color("TextSmall"))
+                                    .font(.caption)
+                                    .italic()
+                                }
+                                .frame(
+                                    maxWidth: .infinity,
+                                    alignment: .leading
+                                )
+                                .padding([.bottom], 10)
+                            }
+                            Text(chat.message)
+                                .foregroundStyle(Color("Text"))
+                                .font(.callout)
+                        }
+                    }
+                    Button(action: {
+                        newComment = ""
+                        showCommentCreate = true
+                    }) {
+                        Text("Post a comment")
+                    }
+                    .foregroundStyle(Color("Link"))
+                } header: {
+                    Text("Comments").foregroundStyle(Color("TextSmall"))
+                }
                 Section(
                     header: Text(foundPets.isEmpty ? "" : "Recently found pets")
                         .foregroundStyle(Color("TextSmall"))
@@ -235,7 +338,7 @@ struct MyLostPetView: View {
             .overlay(alignment: .topLeading) {
                 if isLoading {
                     ZStack {
-                        Color.white
+                        Color(Color("Background"))
                             .ignoresSafeArea()
                         LoadingView()
                     }
@@ -287,6 +390,20 @@ struct MyLostPetView: View {
                     }
                 }
             }
+        }
+        .alert(
+            Text("Post a new comment"),
+            isPresented: $showCommentCreate
+        ) {
+            Button("Cancel", role: .cancel) {
+                showCommentCreate = false
+            }
+            Button("Post") {
+                saveComment()
+            }
+            TextField("Comment", text: $newComment)
+        } message: {
+            Text("Include any useful info to help get \(pet.name) home!")
         }
         .confirmationDialog("Delete?", isPresented: $deleteConfirmation) {
             Button("Yes", role: .destructive) {

@@ -125,7 +125,7 @@ struct FoundPetView: View {
             .overlay(alignment: .topLeading) {
                 if isLoading {
                     ZStack {
-                        Color.white
+                        Color(Color("Background"))
                             .ignoresSafeArea()
                         LoadingView()
                     }

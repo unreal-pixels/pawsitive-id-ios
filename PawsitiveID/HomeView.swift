@@ -82,7 +82,7 @@ struct HomeView: View {
                                 Button(action: {
                                     changeTab(.Pets)
                                 }) {
-                                    Text("Find a found pet")
+                                    Text("View found pets")
                                         .foregroundColor(Color("TextOnColor"))
                                         .font(.subheadline)
                                         .fontWeight(.bold)
