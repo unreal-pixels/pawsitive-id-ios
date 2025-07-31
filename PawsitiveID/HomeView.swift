@@ -107,62 +107,64 @@ struct HomeView: View {
                     .fontWeight(.bold)
                     .padding([.bottom], 15)
                 ScrollView(.horizontal) {
-                    ForEach(reunitedPets, id: \.self) { reunitedPet in
-                        ZStack(alignment: .bottom) {
-                            Button(action: { viewPet(pet: reunitedPet) }) {
-                                AsyncImage(
-                                    url: URL(
-                                        string: reunitedPet.reunited_images
-                                            .first ?? genericImage
-                                    )
-                                ) { result in
-                                    result.image?
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(
-                                            width: 200,
-                                            height: 200,
-                                            alignment: .center
+                    HStack {
+                        ForEach(reunitedPets, id: \.self) { reunitedPet in
+                            ZStack(alignment: .bottom) {
+                                Button(action: { viewPet(pet: reunitedPet) }) {
+                                    AsyncImage(
+                                        url: URL(
+                                            string: reunitedPet.reunited_images
+                                                .first ?? genericImage
                                         )
-                                        .clipped()
+                                    ) { result in
+                                        result.image?
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(
+                                                width: 200,
+                                                height: 200,
+                                                alignment: .center
+                                            )
+                                            .clipped()
+                                    }
+                                    .frame(
+                                        width: 200,
+                                        height: 200,
+                                        alignment: .center
+                                    )
+                                }
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text(
+                                        !reunitedPet.name.isEmpty
+                                            ? reunitedPet.name : "Reunited pet"
+                                    )
+                                    .fontWeight(.bold)
+                                    .lineLimit(1)
+                                    .padding([.bottom], 3)
+                                    .truncationMode(.tail)
+                                    .foregroundStyle(Color("TextOnColor"))
+                                    if reunitedPet.reunited_date != nil {
+                                        Text(
+                                            "Reunited on \(getFormattedDate(reunitedPet.reunited_date ?? ""))"
+                                        )
+                                        .font(.caption)
+                                        .lineLimit(1)
+                                        .truncationMode(.tail)
+                                        .italic()
+                                        .foregroundStyle(Color("TextOnColor"))
+                                    }
                                 }
                                 .frame(
-                                    width: 200,
-                                    height: 200,
-                                    alignment: .center
+                                    minWidth: 0,
+                                    maxWidth: 170,
+                                    alignment: .leading
                                 )
+                                .padding([.vertical], 5)
+                                .padding([.horizontal], 15)
+                                .background(Color("Accent").opacity(0.8))
                             }
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text(
-                                    !reunitedPet.name.isEmpty
-                                        ? reunitedPet.name : "Reunited pet"
-                                )
-                                .fontWeight(.bold)
-                                .lineLimit(1)
-                                .padding([.bottom], 3)
-                                .truncationMode(.tail)
-                                .foregroundStyle(Color("TextOnColor"))
-                                if reunitedPet.reunited_date != nil {
-                                    Text(
-                                        "Reunited on \(getFormattedDate(reunitedPet.reunited_date ?? ""))"
-                                    )
-                                    .font(.caption)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                                    .italic()
-                                    .foregroundStyle(Color("TextOnColor"))
-                                }
-                            }
-                            .frame(
-                                minWidth: 0,
-                                maxWidth: 170,
-                                alignment: .leading
-                            )
-                            .padding([.vertical], 5)
-                            .padding([.horizontal], 15)
-                            .background(Color("Accent").opacity(0.8))
+                            .padding([.trailing], 10)
                         }
-                        .padding([.trailing], 10)
                     }
                 }
                 .task {

@@ -17,6 +17,7 @@ struct PetDetailsView: View {
     @State private var deleteConfirmation = false
     @State private var newComment = ""
     @State private var coordinateDisplayName = ""
+    @State private var showingReunitedAction = false
 
     private func foundMode() -> Bool {
         return pet.post_type == "FOUND"
@@ -273,12 +274,7 @@ struct PetDetailsView: View {
                     }
                     Section {
                         Button(action: {
-                            markReunitedPet(
-                                id: pet.id,
-                                callback: {
-                                    onClose("DELETE")
-                                }
-                            )
+                            showingReunitedAction = true
                         }) {
                             Text("Pet reunited")
                         }
@@ -310,6 +306,25 @@ struct PetDetailsView: View {
                 }
             } message: {
                 Text("Are you sure you want to delete this post?")
+            }
+            .sheet(isPresented: $showingReunitedAction) {
+                NavigationStack {
+                    PetReunitedFormView(onClose: {
+                        onClose("DELETE")
+                    }, pet: $pet)
+                    .navigationBarTitle(
+                        "Reunited with \(pet.name)",
+                        displayMode: .inline
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Cancel") {
+                                showingReunitedAction = false
+                            }
+                            .foregroundStyle(Color("Link"))
+                        }
+                    }
+                }
             }
             .sheet(isPresented: $showingPetLocation) {
                 NavigationStack {

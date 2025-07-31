@@ -20,6 +20,7 @@ struct MyLostPetView: View {
     @State var foundPets: [PetData] = []
     @State var showingPet = false
     @State var deleteConfirmation = false
+    @State var showingReunitedAction = false
     @State var openedPet: PetData = petInitiator
     @State private var shelterData: [ShelterInfo] = []
 
@@ -199,12 +200,7 @@ struct MyLostPetView: View {
                 }
                 Section {
                     Button(action: {
-                        markReunitedPet(
-                            id: pet.id,
-                            callback: {
-                                onClose()
-                            }
-                        )
+                        showingReunitedAction = true
                     }) {
                         Text("Pet reunited")
                             .foregroundStyle(Color("Link"))
@@ -244,6 +240,25 @@ struct MyLostPetView: View {
                         LoadingView()
                     }
                     .zIndex(2)
+                }
+            }
+        }
+        .sheet(isPresented: $showingReunitedAction) {
+            NavigationStack {
+                PetReunitedFormView(onClose: {
+                    onClose()
+                }, pet: $pet)
+                .navigationBarTitle(
+                    "Reunited with \(pet.name)",
+                    displayMode: .inline
+                )
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Cancel") {
+                            showingReunitedAction = false
+                        }
+                        .foregroundStyle(Color("Link"))
+                    }
                 }
             }
         }
